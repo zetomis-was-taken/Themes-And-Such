@@ -89,8 +89,17 @@ async function findAccumulateRecordByIdAndUser(
   return row?.record ?? null;
 }
 
+/** Kiểm tra điểm INPUT: thang 0–10 (có thể thập phân). */
 function isValidScore(value: number): boolean {
   return value >= 0 && value <= 10;
+}
+
+/**
+ * Kiểm tra giá trị ACCUMULATE: mỗi đơn vị cộng điểm phải là số không âm.
+ * Không giới hạn 10 vì là điểm rời rạc cộng dồn (thường là 0 hoặc 1).
+ */
+function isValidUnit(value: number): boolean {
+  return value >= 0 && Number.isFinite(value);
 }
 
 export async function getRulesByClass(
@@ -357,8 +366,8 @@ export async function createAccumulateRecord(
   const userId = await requireUserId();
   if (!userId) return { success: false, error: "Chưa đăng nhập." };
 
-  if (!isValidScore(value))
-    return { success: false, error: "Điểm phải trong khoảng 0–10." };
+  if (!isValidUnit(value))
+    return { success: false, error: "Giá trị cộng điểm phải là số không âm." };
 
   const rule = await findRuleByIdAndUser(ruleId, userId);
   if (!rule)
@@ -390,8 +399,8 @@ export async function updateAccumulateRecord(
   const userId = await requireUserId();
   if (!userId) return { success: false, error: "Chưa đăng nhập." };
 
-  if (!isValidScore(value))
-    return { success: false, error: "Điểm phải trong khoảng 0–10." };
+  if (!isValidUnit(value))
+    return { success: false, error: "Giá trị cộng điểm phải là số không âm." };
 
   const existing = await findAccumulateRecordByIdAndUser(recordId, userId);
   if (!existing)
