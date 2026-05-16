@@ -19,11 +19,13 @@ export const classRules = pgTable("class_rules", {
     .references(() => users.id),
   classId: integer("class_id")
     .notNull()
-    .references(() => classes.id),
+    .references(() => classes.id, { onDelete: "cascade" }),
   ruleName: text("rule_name").notNull(),
   ruleType: ruleTypeEnum("rule_type").notNull(),
-  weightPercent: numeric("weight_percent", { precision: 5, scale: 2 }).notNull(),
-  maxValue: numeric("max_value", { precision: 5, scale: 2 }).notNull(),
+  weightPercent: numeric("weight_percent", {
+    precision: 5,
+    scale: 2,
+  }).notNull(),
   ...timestamps,
 });
 
@@ -34,7 +36,7 @@ export const inputRecords = pgTable("input_records", {
   id: serial("id").primaryKey(),
   ruleId: integer("rule_id")
     .notNull()
-    .references(() => classRules.id),
+    .references(() => classRules.id, { onDelete: "cascade" }),
   value: numeric("value", { precision: 5, scale: 2 }).notNull(),
   ...timestamps,
 });
@@ -46,7 +48,7 @@ export const accumulateRecords = pgTable("accumulate_records", {
   id: serial("id").primaryKey(),
   ruleId: integer("rule_id")
     .notNull()
-    .references(() => classRules.id),
+    .references(() => classRules.id, { onDelete: "cascade" }),
   value: numeric("value", { precision: 5, scale: 2 }).notNull(),
   ...timestamps,
 });
