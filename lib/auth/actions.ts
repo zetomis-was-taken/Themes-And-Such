@@ -6,7 +6,6 @@ import { db } from "@/lib/db";
 import { users, type SafeUser } from "@/lib/db/schema";
 import { createSession, deleteSession, getSession } from "./session";
 
-
 export type AuthResult =
   | { success: true; user: SafeUser }
   | { success: false; error: string };
@@ -92,4 +91,9 @@ export async function getCurrentUser(): Promise<SafeUser | null> {
     .limit(1);
 
   return user ?? null;
+}
+
+export async function requireUserId(): Promise<number | null> {
+  const session = await getSession();
+  return session?.userId ?? null;
 }
