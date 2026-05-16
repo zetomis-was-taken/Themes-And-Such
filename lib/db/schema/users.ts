@@ -8,13 +8,8 @@ export const users = pgTable("users", {
   ...timestamps,
 });
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-/** Row được select từ DB (đầy đủ fields) */
 export type User = typeof users.$inferSelect;
 
-/** Row để insert vào DB */
 export type NewUser = typeof users.$inferInsert;
 
-/** User an toàn để trả về client (không có password) */
 export type SafeUser = Omit<User, "password">;

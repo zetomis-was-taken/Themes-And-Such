@@ -6,29 +6,15 @@ import { db } from "@/lib/db";
 import { users, type SafeUser } from "@/lib/db/schema";
 import { createSession, deleteSession, getSession } from "./session";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 export type AuthResult =
   | { success: true; user: SafeUser }
   | { success: false; error: string };
 
-// ─── Register ─────────────────────────────────────────────────────────────────
-
-/**
- * Đăng ký tài khoản mới.
- * - Hash password bằng bcrypt (salt 10)
- * - Lưu user vào DB
- * - Tạo session cookie
- *
- * @param name     - Tên đăng nhập (unique)
- * @param password - Mật khẩu plain-text
- * @returns AuthResult — { success: true, user: SafeUser } hoặc { success: false, error }
- */
 export async function register(
   name: string,
   password: string
 ): Promise<AuthResult> {
-  // Kiểm tra name đã tồn tại chưa
   const existing = await db
     .select({ id: users.id })
     .from(users)
@@ -60,18 +46,6 @@ export async function register(
   return { success: true, user: newUser };
 }
 
-// ─── Login ────────────────────────────────────────────────────────────────────
-
-/**
- * Đăng nhập bằng name + password.
- * - Tìm user theo name
- * - So sánh password với hash trong DB
- * - Tạo session cookie nếu đúng
- *
- * @param name     - Tên đăng nhập
- * @param password - Mật khẩu plain-text
- * @returns AuthResult — { success: true, user: SafeUser } hoặc { success: false, error }
- */
 export async function login(
   name: string,
   password: string
@@ -94,28 +68,14 @@ export async function login(
 
   await createSession(user.id);
 
-  // Trả về user không kèm password
   const { password: _pw, ...safeUser } = user;
   return { success: true, user: safeUser };
 }
 
-// ─── Logout ───────────────────────────────────────────────────────────────────
-
-/**
- * Đăng xuất — xoá session cookie.
- */
 export async function logout(): Promise<void> {
   await deleteSession();
 }
 
-// ─── Get Current User (Server) ────────────────────────────────────────────────
-
-/**
- * Lấy thông tin user hiện tại từ session cookie (dùng trong Server Components / Server Actions).
- * Validate session token → query DB lấy user mới nhất.
- *
- * @returns SafeUser | null
- */
 export async function getCurrentUser(): Promise<SafeUser | null> {
   const session = await getSession();
   if (!session) return null;
