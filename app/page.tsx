@@ -49,9 +49,9 @@ export default function TestActionsPage() {
   );
 
   return (
-    <div className="p-4 flex gap-4 h-screen font-sans bg-gray-50 text-black">
+    <div className="p-4 flex gap-4 font-sans bg-gray-50 text-black max-w-7xl mx-auto w-full flex-1 h-[calc(100vh-64px)]">
       {/* Cột trái: Form nhập liệu và Nút */}
-      <div className="w-1/2 flex flex-col gap-6 overflow-y-auto pr-2">
+      <div className="w-1/2 flex flex-col gap-6 overflow-y-auto pr-2 pb-8">
         <h1 className="text-2xl font-bold">Testing Lib Actions</h1>
         
         {/* Global Inputs */}
