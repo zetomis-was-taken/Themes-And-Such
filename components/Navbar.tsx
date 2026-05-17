@@ -35,6 +35,9 @@ export function Navbar() {
           >
             Portal Helper
           </Link>
+          <div className="hidden md:flex ml-4 gap-4 text-sm font-medium text-muted-foreground">
+            <Link href="/schedule" className="hover:text-foreground transition-colors">Xếp lịch học</Link>
+          </div>
         </div>
 
         <div className="flex items-center gap-4">

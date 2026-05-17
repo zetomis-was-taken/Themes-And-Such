@@ -4,6 +4,7 @@ import "./globals.css";
 import { getCurrentUser } from "@/lib/auth/actions";
 import { UserProvider } from "@/lib/auth/user-provider";
 import { Navbar } from "@/components/Navbar";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default async function RootLayout({
           <main className="flex-1 flex flex-col">
             {children}
           </main>
+          <Toaster />
         </UserProvider>
       </body>
     </html>
