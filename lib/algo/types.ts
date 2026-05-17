@@ -1,6 +1,5 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-// 1. Dữ liệu các lớp mở
 export const ScheduleTimeSchema = z.object({
   dayOfWeek: z.number().min(2).max(7),
   startPeriod: z.number().min(1).max(10),
@@ -10,7 +9,7 @@ export const ScheduleTimeSchema = z.object({
 export type ScheduleTime = z.infer<typeof ScheduleTimeSchema>;
 
 export const SubClassDataSchema = z.object({
-  type: z.enum(['practical', 'exercise']),
+  type: z.enum(["practical", "exercise"]),
   groupCode: z.string(),
   schedule: ScheduleTimeSchema,
 });
@@ -25,14 +24,12 @@ export const ClassDataSchema = z.object({
 });
 export type ClassData = z.infer<typeof ClassDataSchema>;
 
-// 2. Yêu cầu của người dùng
 export const CourseRequestSchema = z.object({
   courseCodes: z.array(z.string()),
   difficulty: z.number(),
 });
 export type CourseRequest = z.infer<typeof CourseRequestSchema>;
 
-// 3. Ràng buộc thời gian & Tham số truyền vào
 export const TimeConstraintsSchema = z.object({
   preferredTimes: z.array(ScheduleTimeSchema),
   forbiddenTimes: z.array(ScheduleTimeSchema),
@@ -47,7 +44,6 @@ export const GeneratorParamsSchema = z.object({
 });
 export type GeneratorParams = z.infer<typeof GeneratorParamsSchema>;
 
-// 4. Kết quả trả về
 export const SelectedClassSchema = z.object({
   classData: ClassDataSchema,
   selectedSubClass: SubClassDataSchema.optional(),
