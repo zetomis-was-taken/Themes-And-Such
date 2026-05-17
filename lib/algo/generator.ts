@@ -197,15 +197,11 @@ export class ScheduleGenerator {
       preferredScore += countBits(overlappedBits);
     }
 
-    const activeDays = dailyDifficulties.filter((d) => d > 0);
-    let balanceScore = 0;
-    if (activeDays.length > 0) {
-      const mean = activeDays.reduce((a, b) => a + b, 0) / activeDays.length;
-      let variance =
-        activeDays.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) /
-        activeDays.length;
-      balanceScore = -variance;
-    }
+    const mean = dailyDifficulties.reduce((a, b) => a + b, 0) / 6;
+    const variance =
+      dailyDifficulties.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) /
+      6;
+    const balanceScore = -Math.round(variance * 100) / 100;
 
     return {
       classes,

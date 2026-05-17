@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import { ClassDataDropzone } from "@/components/schedule/ClassDataDropzone";
 import { TimeGrid } from "@/components/schedule/TimeGrid";
 import { CourseRequestForm } from "@/components/schedule/CourseRequestForm";
-import { ClassData, CourseRequest } from "@/lib/algo/types";
-import { WeeklyBitmask, createEmptyMask } from "@/lib/algo/bitmask";
+import { ClassData, CourseRequest, GeneratedSchedule } from "@/lib/algo/types";
+import { WeeklyBitmask, createEmptyMask, maskToSchedules } from "@/lib/algo/bitmask";
+import { ScheduleGenerator } from "@/lib/algo/generator";
+import { ScheduleViewer } from "@/components/schedule/ScheduleViewer";
 import { Button } from "@/components/ui/button";
 import { Calculator } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -17,24 +19,50 @@ export default function SchedulePage() {
   const [forbiddenMask, setForbiddenMask] =
     useState<WeeklyBitmask>(createEmptyMask());
   const [requests, setRequests] = useState<CourseRequest[]>([]);
+  const [results, setResults] = useState<GeneratedSchedule[] | null>(null);
+  const [sortBy, setSortBy] = useState<string>("balanceScore");
+  const [maxResults, setMaxResults] = useState<number>(50);
 
   const handleGenerate = () => {
     const payload = {
       availableClasses: classes,
       requests,
       constraints: {
-        preferredTimes: [],
-        forbiddenTimes: [],
+        preferredTimes: maskToSchedules(preferredMask),
+        forbiddenTimes: maskToSchedules(forbiddenMask),
       },
+      maxResults: maxResults
     };
 
-    console.log("=== THÔNG TIN ĐẦU VÀO ===");
-    console.log("Số lượng lớp khả dụng:", classes.length);
-    console.log("Yêu cầu môn học:", requests);
-    console.log("Preferred Mask:", preferredMask);
-    console.log("Forbidden Mask:", forbiddenMask);
-    alert("Dữ liệu đã được in ra Console!");
+    const generator = new ScheduleGenerator(payload);
+    const generated = generator.generate();
+
+    const sorted = [...generated].sort((a, b) => {
+      if (sortBy === "leftmostScore") return b.scores.leftmostScore - a.scores.leftmostScore;
+      if (sortBy === "rightmostScore") return b.scores.rightmostScore - a.scores.rightmostScore;
+      if (sortBy === "balanceScore") return b.scores.balanceScore - a.scores.balanceScore;
+      if (sortBy === "preferredScore") return b.scores.preferredScore - a.scores.preferredScore;
+      return 0;
+    });
+
+    setResults(sorted);
   };
+
+  if (results !== null) {
+    return (
+      <div className="container max-w-6xl mx-auto py-8 px-4 space-y-8 pb-20">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+            Kết quả xếp lịch
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Thuật toán đã tìm thấy {results.length} lịch học khả thi dựa trên yêu cầu của bạn.
+          </p>
+        </div>
+        <ScheduleViewer schedules={results} onBack={() => setResults(null)} />
+      </div>
+    );
+  }
 
   return (
     <div className="container max-w-5xl mx-auto py-8 px-4 space-y-8 pb-20">
@@ -97,7 +125,34 @@ export default function SchedulePage() {
             />
           </section>
 
-          <div className="pt-8">
+          <div className="pt-8 space-y-4">
+            <div className="flex flex-col sm:flex-row gap-4 p-4 rounded-lg border bg-muted/30">
+              <div className="flex-1 space-y-1.5">
+                <label className="text-sm font-semibold">Tiêu chí ưu tiên</label>
+                <select 
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="balanceScore">Lịch cân bằng các ngày</option>
+                  <option value="leftmostScore">Dồn lịch sáng / đầu tuần</option>
+                  <option value="rightmostScore">Dồn lịch chiều / cuối tuần</option>
+                  <option value="preferredScore">Khớp giờ muốn học nhất</option>
+                </select>
+              </div>
+              <div className="sm:w-32 space-y-1.5">
+                <label className="text-sm font-semibold">Max KQ</label>
+                <input 
+                  type="number"
+                  min="1"
+                  max="5000"
+                  value={maxResults}
+                  onChange={(e) => setMaxResults(Number(e.target.value))}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                />
+              </div>
+            </div>
+
             <Button
               size="lg"
               className="w-full text-base h-14 font-semibold shadow-lg hover:shadow-xl transition-all"

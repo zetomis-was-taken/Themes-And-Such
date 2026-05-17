@@ -94,7 +94,7 @@
     "schedule": {
       "dayOfWeek": 3,
       "startPeriod": 4,
-      "endPeriod": 6,
+      "endPeriod": 6.5,
       "room": "401-G2"
     },
     "subClasses": [
@@ -104,7 +104,7 @@
         "schedule": {
           "dayOfWeek": 5,
           "startPeriod": 1,
-          "endPeriod": 2,
+          "endPeriod": 3.5,
           "room": "403-G2"
         }
       },

@@ -49,6 +49,20 @@ export const schedulesToBitmask = (
   return mask;
 };
 
+export const maskToSchedules = (mask: WeeklyBitmask): ScheduleTime[] => {
+  const schedules: ScheduleTime[] = [];
+  for (let d = 0; d < 6; d++) {
+    const daily = mask[d];
+    for (let p = 1; p <= 12; p++) {
+      const bitIndex = (p - 1) * 2;
+      if ((daily & (1 << bitIndex)) !== 0) {
+        schedules.push({ dayOfWeek: d + 2, startPeriod: p, endPeriod: p });
+      }
+    }
+  }
+  return schedules;
+};
+
 export const checkCollision = (
   maskA: WeeklyBitmask,
   maskB: WeeklyBitmask,
