@@ -12,8 +12,10 @@ import { Separator } from "@/components/ui/separator";
 
 export default function SchedulePage() {
   const [classes, setClasses] = useState<ClassData[]>([]);
-  const [preferredMask, setPreferredMask] = useState<WeeklyBitmask>(createEmptyMask());
-  const [forbiddenMask, setForbiddenMask] = useState<WeeklyBitmask>(createEmptyMask());
+  const [preferredMask, setPreferredMask] =
+    useState<WeeklyBitmask>(createEmptyMask());
+  const [forbiddenMask, setForbiddenMask] =
+    useState<WeeklyBitmask>(createEmptyMask());
   const [requests, setRequests] = useState<CourseRequest[]>([]);
 
   const handleGenerate = () => {
@@ -21,11 +23,11 @@ export default function SchedulePage() {
       availableClasses: classes,
       requests,
       constraints: {
-        preferredTimes: [], // Will need adaptation to bitmask later
-        forbiddenTimes: [], 
-      }
+        preferredTimes: [],
+        forbiddenTimes: [],
+      },
     };
-    
+
     console.log("=== THÔNG TIN ĐẦU VÀO ===");
     console.log("Số lượng lớp khả dụng:", classes.length);
     console.log("Yêu cầu môn học:", requests);
@@ -37,24 +39,29 @@ export default function SchedulePage() {
   return (
     <div className="container max-w-5xl mx-auto py-8 px-4 space-y-8 pb-20">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Tìm lịch học</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+          Tìm lịch học
+        </h1>
         <p className="text-muted-foreground mt-2">
-          Tải lên danh sách lớp mở, thiết lập thời gian và nhóm môn học để thuật toán xếp lịch tốt nhất cho bạn.
+          Tải lên danh sách lớp mở, thiết lập thời gian và nhóm môn học để thuật
+          toán xếp lịch tốt nhất cho bạn.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-8">
-        {/* Cột trái */}
         <div className="space-y-8">
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <div className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">1</div>
+              <div className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">
+                1
+              </div>
               <h2 className="text-xl font-semibold">Dữ liệu Lớp học</h2>
             </div>
             <ClassDataDropzone onDataLoaded={setClasses} />
             {classes.length > 0 && (
               <p className="text-sm text-green-600 mt-2 font-medium flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span> Đã nạp {classes.length} lớp học.
+                <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>{" "}
+                Đã nạp {classes.length} lớp học.
               </p>
             )}
           </section>
@@ -63,31 +70,37 @@ export default function SchedulePage() {
 
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <div className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+              <div className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">
+                2
+              </div>
               <h2 className="text-xl font-semibold">Yêu cầu Môn học</h2>
             </div>
             <CourseRequestForm requests={requests} onChange={setRequests} />
           </section>
         </div>
 
-        {/* Cột phải */}
         <div className="space-y-8 lg:pl-4">
           <section>
             <div className="flex items-center gap-2 mb-4">
-              <div className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+              <div className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">
+                3
+              </div>
               <h2 className="text-xl font-semibold">Ràng buộc Thời gian</h2>
             </div>
-            <TimeGrid 
-              preferredMask={preferredMask} 
-              forbiddenMask={forbiddenMask} 
-              onChange={(p, f) => { setPreferredMask(p); setForbiddenMask(f); }} 
+            <TimeGrid
+              preferredMask={preferredMask}
+              forbiddenMask={forbiddenMask}
+              onChange={(p, f) => {
+                setPreferredMask(p);
+                setForbiddenMask(f);
+              }}
             />
           </section>
 
           <div className="pt-8">
-            <Button 
-              size="lg" 
-              className="w-full text-base h-14 font-semibold shadow-lg hover:shadow-xl transition-all" 
+            <Button
+              size="lg"
+              className="w-full text-base h-14 font-semibold shadow-lg hover:shadow-xl transition-all"
               onClick={handleGenerate}
               disabled={classes.length === 0 || requests.length === 0}
             >
