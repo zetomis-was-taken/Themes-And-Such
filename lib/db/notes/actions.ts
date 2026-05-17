@@ -42,3 +42,17 @@ export async function getDailyNote(targetDate: string) {
 
   return existing?.content || "";
 }
+
+export async function getNotesDates(): Promise<string[]> {
+  const session = await getSession();
+  if (!session) return [];
+
+  const userNotes = await db.query.notes.findMany({
+    where: eq(notes.userId, session.userId),
+    columns: {
+      targetDate: true,
+    },
+  });
+
+  return userNotes.map((n) => n.targetDate);
+}

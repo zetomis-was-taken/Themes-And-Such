@@ -10,8 +10,9 @@ import { getSession } from "@/lib/auth/session";
 import { eq, inArray } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { MarkdownNote } from "@/components/dashboard/MarkdownNote";
-import { getDailyNote } from "@/lib/db/notes/actions";
+import { getDailyNote, getNotesDates } from "@/lib/db/notes/actions";
 import { ClockAndClasses } from "@/components/dashboard/ClockAndClasses";
+import { HistoryCalendar } from "@/components/dashboard/HistoryCalendar";
 
 async function getTodaysClasses() {
   const session = await getSession();
@@ -103,6 +104,7 @@ export default async function DashboardPage() {
   const targetDateStr = localDate.toISOString().split("T")[0];
 
   const initialNote = await getDailyNote(targetDateStr);
+  const notesDates = await getNotesDates();
 
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4 space-y-8 pb-20">
@@ -125,6 +127,7 @@ export default async function DashboardPage() {
             initialContent={initialNote}
             targetDate={targetDateStr}
           />
+          <HistoryCalendar notesDates={notesDates} allClasses={allUserClasses} />
         </div>
       </div>
     </div>
