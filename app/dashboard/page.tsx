@@ -1,0 +1,132 @@
+import React from "react";
+import { db } from "@/lib/db";
+import {
+  userClasses,
+  classes,
+  schedules,
+  subClasses,
+} from "@/lib/db/schema/classes";
+import { getSession } from "@/lib/auth/session";
+import { eq, inArray } from "drizzle-orm";
+import { redirect } from "next/navigation";
+import { MarkdownNote } from "@/components/dashboard/MarkdownNote";
+import { getDailyNote } from "@/lib/db/notes/actions";
+import { ClockAndClasses } from "@/components/dashboard/ClockAndClasses";
+
+async function getTodaysClasses() {
+  const session = await getSession();
+  if (!session) return [];
+
+  const userEnrolledClasses = await db
+    .select({
+      classId: classes.id,
+      className: classes.className,
+      courseName: classes.courseName,
+      classScheduleId: classes.scheduleId,
+      subClassGroup: subClasses.groupCode,
+      subClassScheduleId: subClasses.scheduleId,
+    })
+    .from(userClasses)
+    .innerJoin(classes, eq(userClasses.classId, classes.id))
+    .leftJoin(subClasses, eq(userClasses.subClassId, subClasses.id))
+    .where(eq(userClasses.userId, session.userId));
+
+  const scheduleIds = new Set<number>();
+  userEnrolledClasses.forEach((c) => {
+    scheduleIds.add(c.classScheduleId);
+    if (c.subClassScheduleId) scheduleIds.add(c.subClassScheduleId);
+  });
+
+  if (scheduleIds.size === 0) return [];
+
+  const schedulesData = await db
+    .select()
+    .from(schedules)
+    .where(inArray(schedules.id, Array.from(scheduleIds)));
+
+  const schedulesMap = new Map(schedulesData.map((s) => [s.id, s]));
+
+  // Fix timezone issue by using local date string if needed,
+  // but Server is typically UTC. Let's rely on Client component for real-time highlighting.
+  // Here we just fetch ALL classes for the user and pass to client component to filter by "today"
+  // since server might be on a different timezone than the client.
+
+  const allItems: any[] = [];
+  userEnrolledClasses.forEach((c) => {
+    const mainSched = schedulesMap.get(c.classScheduleId);
+    if (mainSched) {
+      allItems.push({
+        courseName: c.courseName,
+        className: c.className,
+        room: mainSched.room,
+        startPeriod: mainSched.startPeriod,
+        endPeriod: mainSched.endPeriod,
+        dayOfWeek: mainSched.dayOfWeek,
+        type: "Lý thuyết",
+      });
+    }
+
+    if (c.subClassScheduleId) {
+      const subSched = schedulesMap.get(c.subClassScheduleId);
+      if (subSched) {
+        allItems.push({
+          courseName: c.courseName,
+          className: `${c.className} (Nhóm ${c.subClassGroup})`,
+          room: subSched.room,
+          startPeriod: subSched.startPeriod,
+          endPeriod: subSched.endPeriod,
+          dayOfWeek: subSched.dayOfWeek,
+          type: "TH/BT",
+        });
+      }
+    }
+  });
+
+  return allItems;
+}
+
+export default async function DashboardPage() {
+  const session = await getSession();
+  if (!session) {
+    redirect("/login");
+  }
+
+  const allUserClasses = await getTodaysClasses();
+
+  // Note: for targetDate, we can use UTC or pass the duty to client,
+  // but usually simple YYYY-MM-DD from server is fine if user is in same timezone.
+  // To be perfectly safe across timezones, we might need a client component that fetches the note.
+  // But let's just use server's current date for now, or assume UTC+7.
+  const today = new Date();
+  const offset = 7 * 60 * 60 * 1000; // GMT+7
+  const localDate = new Date(today.getTime() + offset);
+  const targetDateStr = localDate.toISOString().split("T")[0];
+
+  const initialNote = await getDailyNote(targetDateStr);
+
+  return (
+    <div className="container max-w-6xl mx-auto py-8 px-4 space-y-8 pb-20">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+          Dashboard
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Tổng quan lịch học và ghi chú cá nhân của bạn.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8">
+        <div className="space-y-8">
+          <ClockAndClasses allClasses={allUserClasses} />
+        </div>
+
+        <div className="space-y-8">
+          <MarkdownNote
+            initialContent={initialNote}
+            targetDate={targetDateStr}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}

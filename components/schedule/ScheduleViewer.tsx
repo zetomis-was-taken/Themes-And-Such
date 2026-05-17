@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { GeneratedSchedule } from "@/lib/algo/types";
 import { ScheduleTable } from "./ScheduleTable";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Save, Info } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, Info, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { saveOfficialSchedule } from "@/lib/db/schedule/actions";
+import { toast } from "sonner";
 
 interface ScheduleViewerProps {
   schedules: GeneratedSchedule[];
@@ -12,6 +14,7 @@ interface ScheduleViewerProps {
 
 export function ScheduleViewer({ schedules, onBack }: ScheduleViewerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
 
   if (!schedules || schedules.length === 0) {
     return (
@@ -41,9 +44,16 @@ export function ScheduleViewer({ schedules, onBack }: ScheduleViewerProps) {
     setCurrentIndex((prev) => (prev < schedules.length - 1 ? prev + 1 : prev));
   };
 
-  const handleSave = () => {
-    // TODO: implement save functionality
-    alert("Tính năng lưu lịch học đang được phát triển!");
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await saveOfficialSchedule(currentSchedule.classes);
+      toast.success("Đã lưu lịch học thành công!");
+    } catch (error: any) {
+      toast.error(error.message || "Có lỗi xảy ra khi lưu lịch học");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -103,13 +113,18 @@ export function ScheduleViewer({ schedules, onBack }: ScheduleViewerProps) {
       <Separator />
 
       <div className="flex justify-end pt-2 pb-10">
-        <Button
-          onClick={handleSave}
-          size="lg"
+        <Button 
+          onClick={handleSave} 
+          size="lg" 
+          disabled={isSaving}
           className="px-8 shadow-md hover:shadow-lg transition-all font-semibold"
         >
-          <Save className="w-5 h-5 mr-2" />
-          Lưu làm lịch chính thức
+          {isSaving ? (
+            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+          ) : (
+            <Save className="w-5 h-5 mr-2" />
+          )}
+          {isSaving ? "Đang lưu..." : "Lưu làm lịch chính thức"}
         </Button>
       </div>
     </div>

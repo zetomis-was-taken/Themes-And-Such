@@ -17,6 +17,7 @@ export const dayOfWeekEnum = pgEnum("day_of_week", [
   "6",
   "7",
 ]);
+export type DayOfWeek = (typeof dayOfWeekEnum.enumValues)[number];
 
 export const schedules = pgTable("schedules", {
   id: serial("id").primaryKey(),
