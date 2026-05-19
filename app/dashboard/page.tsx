@@ -47,11 +47,6 @@ async function getTodaysClasses() {
 
   const schedulesMap = new Map(schedulesData.map((s) => [s.id, s]));
 
-  // Fix timezone issue by using local date string if needed,
-  // but Server is typically UTC. Let's rely on Client component for real-time highlighting.
-  // Here we just fetch ALL classes for the user and pass to client component to filter by "today"
-  // since server might be on a different timezone than the client.
-
   const allItems: any[] = [];
   userEnrolledClasses.forEach((c) => {
     const mainSched = schedulesMap.get(c.classScheduleId);
@@ -94,12 +89,8 @@ export default async function DashboardPage() {
 
   const allUserClasses = await getTodaysClasses();
 
-  // Note: for targetDate, we can use UTC or pass the duty to client,
-  // but usually simple YYYY-MM-DD from server is fine if user is in same timezone.
-  // To be perfectly safe across timezones, we might need a client component that fetches the note.
-  // But let's just use server's current date for now, or assume UTC+7.
   const today = new Date();
-  const offset = 7 * 60 * 60 * 1000; // GMT+7
+  const offset = 7 * 60 * 60 * 1000;
   const localDate = new Date(today.getTime() + offset);
   const targetDateStr = localDate.toISOString().split("T")[0];
 
@@ -127,7 +118,10 @@ export default async function DashboardPage() {
             initialContent={initialNote}
             targetDate={targetDateStr}
           />
-          <HistoryCalendar notesDates={notesDates} allClasses={allUserClasses} />
+          <HistoryCalendar
+            notesDates={notesDates}
+            allClasses={allUserClasses}
+          />
         </div>
       </div>
     </div>
