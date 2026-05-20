@@ -70,16 +70,16 @@ export function GPASummary({ classesData }: { classesData: ClassGradeData[] }) {
         </CardContent>
       </Card>
 
-      <Card className="bg-white border border-gray-200 shadow-sm">
+      <Card className="bg-card border border-border shadow-sm">
         <CardContent className="p-6 flex items-center gap-4">
-          <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+          <div className="p-3 bg-blue-50/50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
             <BookOpen className="w-8 h-8" />
           </div>
           <div>
             <p className="text-muted-foreground font-medium text-sm">
               Tín chỉ tích lũy (Đã có điểm)
             </p>
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="text-3xl font-bold text-foreground">
               {totalCredits}
             </h2>
             <p className="text-xs text-muted-foreground mt-1">

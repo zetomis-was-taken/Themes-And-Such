@@ -121,14 +121,14 @@ export function CourseRequestForm({ requests, onChange }: CourseRequestFormProps
       <div className="space-y-3">
         <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">Danh sách yêu cầu ({requests.length})</h4>
         {requests.length === 0 ? (
-          <p className="text-sm text-muted-foreground italic bg-muted/30 p-4 rounded-md border border-dashed text-center">Chưa có môn nào được chọn.</p>
+          <p className="text-sm text-muted-foreground italic bg-muted/30 p-4 rounded-md border border-dashed border-border text-center">Chưa có môn nào được chọn.</p>
         ) : (
           requests.map((req, idx) => (
-            <div key={idx} className="flex items-center justify-between p-3 bg-white border rounded-lg shadow-sm group hover:border-primary/30 transition-colors">
+            <div key={idx} className="flex items-center justify-between p-3 bg-card border border-border rounded-lg shadow-sm group hover:border-primary/30 transition-colors">
               <div>
                 <div className="flex flex-wrap gap-1.5 mb-1.5">
                   {req.courseCodes.map(code => (
-                    <Badge key={code} variant="outline" className="bg-blue-50/50 text-blue-700 border-blue-200">
+                    <Badge key={code} variant="outline" className="bg-blue-50/50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-900/50">
                       {code}
                     </Badge>
                   ))}

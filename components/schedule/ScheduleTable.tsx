@@ -9,19 +9,19 @@ const DAYS = [2, 3, 4, 5, 6, 7];
 const PERIODS = Array.from({ length: 10 }, (_, i) => i + 1);
 
 const COLORS = [
-  "bg-blue-100 border-blue-200 text-blue-800",
-  "bg-emerald-100 border-emerald-200 text-emerald-800",
-  "bg-violet-100 border-violet-200 text-violet-800",
-  "bg-amber-100 border-amber-200 text-amber-800",
-  "bg-pink-100 border-pink-200 text-pink-800",
-  "bg-cyan-100 border-cyan-200 text-cyan-800",
-  "bg-rose-100 border-rose-200 text-rose-800",
-  "bg-indigo-100 border-indigo-200 text-indigo-800",
+  "bg-blue-100 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300",
+  "bg-emerald-100 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300",
+  "bg-violet-100 dark:bg-violet-900/30 border-violet-200 dark:border-violet-800 text-violet-800 dark:text-violet-300",
+  "bg-amber-100 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300",
+  "bg-pink-100 dark:bg-pink-900/30 border-pink-200 dark:border-pink-800 text-pink-800 dark:text-pink-300",
+  "bg-cyan-100 dark:bg-cyan-900/30 border-cyan-200 dark:border-cyan-800 text-cyan-800 dark:text-cyan-300",
+  "bg-rose-100 dark:bg-rose-900/30 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300",
+  "bg-indigo-100 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-800 text-indigo-800 dark:text-indigo-300",
 ];
 
 export function ScheduleTable({ schedule }: ScheduleTableProps) {
   return (
-    <div className="w-full overflow-x-auto border rounded-lg bg-white shadow-sm">
+    <div className="w-full overflow-x-auto border rounded-lg bg-card shadow-sm">
       <div
         className="min-w-[700px] grid"
         style={{
@@ -56,7 +56,7 @@ export function ScheduleTable({ schedule }: ScheduleTableProps) {
               {DAYS.map((day, dayIdx) => (
                 <div
                   key={`bg-${day}-${period}`}
-                  className="border-b border-r last:border-r-0 border-dashed border-gray-100"
+                  className="border-b border-r last:border-r-0 border-dashed border-border/50"
                   style={{
                     gridColumn: dayIdx + 2,
                     gridRow: `${rowStart} / span 2`,

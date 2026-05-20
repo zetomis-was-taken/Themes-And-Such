@@ -52,7 +52,7 @@ export default function SchedulePage() {
     return (
       <div className="container max-w-6xl mx-auto py-8 px-4 space-y-8 pb-20">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Kết quả xếp lịch
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -67,7 +67,7 @@ export default function SchedulePage() {
   return (
     <div className="container max-w-5xl mx-auto py-8 px-4 space-y-8 pb-20">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Tìm lịch học
         </h1>
         <p className="text-muted-foreground mt-2">

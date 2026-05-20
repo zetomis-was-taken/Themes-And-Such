@@ -18,10 +18,10 @@ export function ClassRulesCard({ classData }: { classData: ClassGradeData }) {
   );
 
   return (
-    <Card className="shadow-sm border-gray-200">
-      <CardHeader className="pb-3 flex flex-row items-center justify-between border-b bg-gray-50/50">
+    <Card className="shadow-sm border-border">
+      <CardHeader className="pb-3 flex flex-row items-center justify-between border-b bg-muted/50">
         <div>
-          <CardTitle className="text-lg font-semibold text-gray-900">
+          <CardTitle className="text-lg font-semibold">
             {classData.courseName}
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
@@ -33,8 +33,8 @@ export function ClassRulesCard({ classData }: { classData: ClassGradeData }) {
             variant={totalWeight === 100 ? "default" : "secondary"}
             className={
               totalWeight === 100
-                ? "bg-green-100 text-green-700 hover:bg-green-100 border-transparent"
-                : "bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-transparent"
+                ? "bg-green-100 text-green-700 hover:bg-green-100 border-transparent dark:bg-green-900/30 dark:text-green-400"
+                : "bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-transparent dark:bg-yellow-900/30 dark:text-yellow-400"
             }
           >
             Tổng: {totalWeight}%
@@ -53,7 +53,7 @@ export function ClassRulesCard({ classData }: { classData: ClassGradeData }) {
       </CardHeader>
       <CardContent className="pt-4">
         {classData.rules.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-md border border-dashed">
+          <div className="text-center py-8 text-muted-foreground bg-muted/30 rounded-md border border-dashed border-border">
             <p className="text-sm">Chưa có quy chế điểm nào được thiết lập.</p>
             <p className="text-xs mt-1">Hãy thêm cột điểm để bắt đầu quản lý.</p>
           </div>
@@ -62,14 +62,14 @@ export function ClassRulesCard({ classData }: { classData: ClassGradeData }) {
             {classData.rules.map((rule) => (
               <div
                 key={rule.id}
-                className="flex items-center justify-between p-3 rounded-lg border border-gray-100 bg-white hover:border-gray-300 transition-colors cursor-pointer group"
+                className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:border-primary/50 transition-colors cursor-pointer group"
                 onClick={() => {
                   setSelectedRule(rule);
                   setIsDialogOpen(true);
                 }}
               >
                 <div className="flex flex-col">
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-foreground">
                     {rule.ruleName}
                   </span>
                   <span className="text-xs text-muted-foreground mt-0.5">
@@ -79,10 +79,10 @@ export function ClassRulesCard({ classData }: { classData: ClassGradeData }) {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-semibold text-blue-600">
+                  <span className="font-semibold text-blue-600 dark:text-blue-400">
                     {rule.weightPercent}%
                   </span>
-                  <Settings2 className="w-4 h-4 text-gray-400 group-hover:text-gray-700 transition-colors" />
+                  <Settings2 className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
               </div>
             ))}

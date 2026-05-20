@@ -52,9 +52,9 @@ export function AccumulateRuleItem({
   };
 
   return (
-    <div className="flex items-center justify-between p-3 rounded-lg border border-gray-100 bg-white">
+    <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-card">
       <div className="flex flex-col">
-        <span className="font-medium text-gray-900">{rule.ruleName}</span>
+        <span className="font-medium text-foreground">{rule.ruleName}</span>
         <span className="text-xs text-muted-foreground mt-0.5">
           Trọng số: {rule.weightPercent}%
         </span>

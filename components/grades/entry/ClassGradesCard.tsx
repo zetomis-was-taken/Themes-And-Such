@@ -36,10 +36,10 @@ export function ClassGradesCard({ classData }: { classData: ClassGradeData }) {
   const { score, weightUsed } = calculateClassScore();
 
   return (
-    <Card className="shadow-sm border-gray-200">
-      <CardHeader className="pb-3 flex flex-row items-center justify-between border-b bg-gray-50/50">
+    <Card className="shadow-sm border-border">
+      <CardHeader className="pb-3 flex flex-row items-center justify-between border-b bg-muted/50">
         <div>
-          <CardTitle className="text-lg font-semibold text-gray-900">
+          <CardTitle className="text-lg font-semibold text-foreground">
             {classData.courseName}
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
@@ -51,7 +51,7 @@ export function ClassGradesCard({ classData }: { classData: ClassGradeData }) {
             variant={weightUsed === 100 ? "default" : "outline"}
             className={
               weightUsed === 100
-                ? "bg-green-100 text-green-700 hover:bg-green-100 border-transparent text-sm py-1 px-3"
+                ? "bg-green-100 text-green-700 hover:bg-green-100 border-transparent text-sm py-1 px-3 dark:bg-green-900/30 dark:text-green-400"
                 : "text-sm py-1 px-3"
             }
           >
@@ -61,7 +61,7 @@ export function ClassGradesCard({ classData }: { classData: ClassGradeData }) {
       </CardHeader>
       <CardContent className="pt-4">
         {classData.rules.length === 0 ? (
-          <div className="text-center py-6 text-muted-foreground bg-gray-50 rounded-md border border-dashed">
+          <div className="text-center py-6 text-muted-foreground bg-muted/30 rounded-md border border-dashed border-border">
             <p className="text-sm">Chưa có cột điểm.</p>
             <p className="text-xs mt-1">Sang tab Thiết lập Rules để thêm.</p>
           </div>

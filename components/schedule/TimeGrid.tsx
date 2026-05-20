@@ -112,7 +112,7 @@ export function TimeGrid({
         </ToggleGroup>
       </div>
 
-      <div className="border rounded-md overflow-hidden bg-white shadow-sm">
+      <div className="border rounded-md overflow-hidden bg-card shadow-sm">
         <div className="grid grid-cols-7 border-b bg-muted/50 text-sm font-medium">
           <div className="p-2 text-center border-r">Tiết</div>
           {DAYS.map((day) => (
@@ -133,7 +133,7 @@ export function TimeGrid({
                 const isPref = (preferredMask[dayIdx] & cellMask) !== 0;
                 const isForb = (forbiddenMask[dayIdx] & cellMask) !== 0;
 
-                let bgClass = "bg-white hover:bg-gray-50";
+                let bgClass = "bg-card hover:bg-muted";
                 if (isPref)
                   bgClass = "bg-green-500 hover:bg-green-600 border-green-600";
                 else if (isForb)
@@ -163,7 +163,7 @@ export function TimeGrid({
           <div className="w-3 h-3 bg-red-500 rounded-sm"></div> Không học
         </span>
         <span className="flex items-center gap-1">
-          <div className="w-3 h-3 border rounded-sm bg-white"></div> Bình thường
+          <div className="w-3 h-3 border rounded-sm bg-card"></div> Bình thường
         </span>
       </div>
     </div>

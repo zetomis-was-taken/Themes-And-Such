@@ -18,7 +18,7 @@ export function ScheduleViewer({ schedules, onBack }: ScheduleViewerProps) {
 
   if (!schedules || schedules.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center border rounded-lg bg-gray-50/50">
+      <div className="flex flex-col items-center justify-center p-12 text-center border rounded-lg bg-muted/30 border-border">
         <Info className="w-12 h-12 text-muted-foreground mb-4" />
         <h3 className="text-xl font-semibold mb-2">
           Không tìm thấy lịch học phù hợp
@@ -58,7 +58,7 @@ export function ScheduleViewer({ schedules, onBack }: ScheduleViewerProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-lg border shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card p-4 rounded-lg border shadow-sm border-border">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="sm" onClick={onBack}>
             <ChevronLeft className="w-4 h-4 mr-1" /> Cấu hình lại
@@ -90,7 +90,7 @@ export function ScheduleViewer({ schedules, onBack }: ScheduleViewerProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-blue-50 text-blue-900 border border-blue-200 p-4 rounded-lg flex flex-col justify-center items-center text-center">
+        <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-900 dark:text-blue-300 border border-blue-200 dark:border-blue-800 p-4 rounded-lg flex flex-col justify-center items-center text-center">
           <span className="text-xs font-semibold uppercase tracking-wider mb-1 opacity-70">
             Điểm dồn sáng
           </span>
@@ -98,7 +98,7 @@ export function ScheduleViewer({ schedules, onBack }: ScheduleViewerProps) {
             {currentSchedule.scores.leftmostScore}
           </span>
         </div>
-        <div className="bg-amber-50 text-amber-900 border border-amber-200 p-4 rounded-lg flex flex-col justify-center items-center text-center">
+        <div className="bg-amber-50 dark:bg-amber-900/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800 p-4 rounded-lg flex flex-col justify-center items-center text-center">
           <span className="text-xs font-semibold uppercase tracking-wider mb-1 opacity-70">
             Điểm dồn chiều
           </span>

@@ -109,7 +109,7 @@ export function HistoryCalendar({
   }
 
   return (
-    <div className="bg-white border rounded-lg shadow-sm overflow-hidden flex flex-col h-full">
+    <div className="bg-card border rounded-lg shadow-sm overflow-hidden flex flex-col h-full">
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-bold text-lg">
           {MONTH_NAMES[month]}, {year}
@@ -171,7 +171,7 @@ export function HistoryCalendar({
       </div>
 
       {selectedDateStr && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 animate-in fade-in">
           <div className="bg-background rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b">
               <h2 className="text-xl font-bold">
@@ -197,7 +197,7 @@ export function HistoryCalendar({
                   <div>
                     <h3 className="text-lg font-bold mb-4">Lớp học ngày này</h3>
                     {selectedClasses.length === 0 ? (
-                      <div className="text-muted-foreground italic bg-muted/20 p-6 rounded-lg text-center border border-dashed">
+                      <div className="text-muted-foreground italic bg-muted/20 p-6 rounded-lg text-center border border-dashed border-border">
                         Không có lịch học.
                       </div>
                     ) : (
@@ -205,7 +205,7 @@ export function HistoryCalendar({
                         {selectedClasses.map((cls, idx) => (
                           <div
                             key={idx}
-                            className="p-3 border rounded-lg bg-white shadow-sm"
+                            className="p-3 border rounded-lg bg-card shadow-sm border-border"
                           >
                             <div className="flex justify-between items-start mb-1">
                               <span className="font-semibold text-primary">

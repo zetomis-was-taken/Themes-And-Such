@@ -38,7 +38,7 @@ export function MarkdownNote({
   };
 
   return (
-    <div className="flex flex-col h-[500px] border rounded-lg overflow-hidden bg-white shadow-sm">
+    <div className="flex flex-col h-[500px] border rounded-lg overflow-hidden bg-card text-card-foreground shadow-sm">
       <div className="flex items-center justify-between p-2 border-b bg-muted/30">
         <h3 className="font-semibold px-2">Ghi chú ngày {targetDate}</h3>
         <Button
@@ -65,7 +65,7 @@ export function MarkdownNote({
 
         <TabsContent value="write" className="flex-1 p-0 m-0 border-t mt-2">
           <textarea
-            className="w-full h-full p-4 resize-none focus:outline-none focus:ring-0 border-0"
+            className="w-full h-full p-4 resize-none focus:outline-none focus:ring-0 border-0 bg-transparent"
             placeholder="Viết ghi chú của bạn bằng Markdown ở đây..."
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -74,7 +74,7 @@ export function MarkdownNote({
 
         <TabsContent
           value="preview"
-          className="flex-1 p-4 m-0 border-t mt-2 overflow-y-auto prose prose-sm max-w-none"
+          className="flex-1 p-4 m-0 border-t mt-2 overflow-y-auto prose prose-sm max-w-none dark:prose-invert"
         >
           {content ? (
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>

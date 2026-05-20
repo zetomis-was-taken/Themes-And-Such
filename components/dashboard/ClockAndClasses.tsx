@@ -99,12 +99,12 @@ export function ClockAndClasses({ allClasses }: { allClasses: ClassItem[] }) {
               return (
                 <div 
                   key={idx} 
-                  className={`p-4 border rounded-lg transition-all ${
+                  className={`p-4 border border-border rounded-lg transition-all ${
                     isActive 
-                      ? "bg-blue-50 border-blue-400 shadow-md ring-1 ring-blue-400" 
+                      ? "bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-700 shadow-md ring-1 ring-blue-400 dark:ring-blue-700" 
                       : isPast 
                         ? "bg-muted/30 opacity-70" 
-                        : "bg-white hover:shadow-sm"
+                        : "bg-card hover:shadow-sm"
                   }`}
                 >
                   <div className="flex justify-between items-start mb-2">

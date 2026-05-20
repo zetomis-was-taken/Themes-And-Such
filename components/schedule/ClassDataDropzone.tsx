@@ -61,7 +61,7 @@ export function ClassDataDropzone({ onDataLoaded }: ClassDataDropzoneProps) {
         className="p-8 flex flex-col items-center justify-center text-center space-y-4 outline-none"
       >
         <input {...getInputProps()} />
-        <div className="p-4 bg-white dark:bg-black rounded-full shadow-sm border">
+        <div className="p-4 bg-card rounded-full shadow-sm border">
           <UploadCloud className="h-8 w-8 text-primary" />
         </div>
         <div>
