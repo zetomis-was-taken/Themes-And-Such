@@ -37,6 +37,7 @@ export function Navbar() {
           </Link>
           <div className="hidden md:flex ml-4 gap-4 text-sm font-medium text-muted-foreground">
             <Link href="/schedule" className="hover:text-foreground transition-colors">Xếp lịch học</Link>
+            <Link href="/dashboard/grades" className="hover:text-foreground transition-colors">Quản lý điểm</Link>
           </div>
         </div>
 
