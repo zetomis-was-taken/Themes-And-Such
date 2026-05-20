@@ -9,18 +9,25 @@ export const metadata = {
   title: "Quản lý điểm | Portal Helper",
 };
 
-export default async function GradesPage() {
+export default async function GradesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const session = await getSession();
   if (!session) {
     redirect("/auth?tab=login");
   }
+
+  const resolvedParams = await searchParams;
+  const tab = typeof resolvedParams.tab === "string" ? resolvedParams.tab : "entry";
 
   const classesData = await getUserClassesWithGrades();
 
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4 space-y-8 pb-20">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
           Quản lý Điểm & GPA
         </h1>
         <p className="text-muted-foreground mt-2">
@@ -28,7 +35,7 @@ export default async function GradesPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="entry" className="w-full">
+      <Tabs key={tab} defaultValue={tab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 max-w-[400px] mb-8">
           <TabsTrigger value="entry">Nhập điểm</TabsTrigger>
           <TabsTrigger value="rules">Thiết lập Rules</TabsTrigger>
