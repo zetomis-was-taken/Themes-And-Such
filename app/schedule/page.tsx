@@ -103,7 +103,11 @@ export default function SchedulePage() {
               </div>
               <h2 className="text-xl font-semibold">Yêu cầu Môn học</h2>
             </div>
-            <CourseRequestForm requests={requests} onChange={setRequests} />
+            <CourseRequestForm 
+              requests={requests} 
+              onChange={setRequests} 
+              availableCourseCodes={Array.from(new Set(classes.map(c => c.courseCode)))}
+            />
           </section>
         </div>
 

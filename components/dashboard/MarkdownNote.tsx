@@ -9,6 +9,8 @@ import { saveDailyNote } from "@/lib/db/notes/actions";
 import { toast } from "sonner";
 import { Save, Loader2 } from "lucide-react";
 
+import { useRouter } from "next/navigation";
+
 interface MarkdownNoteProps {
   initialContent: string;
   targetDate: string;
@@ -18,6 +20,7 @@ export function MarkdownNote({
   initialContent,
   targetDate,
 }: MarkdownNoteProps) {
+  const router = useRouter();
   const [content, setContent] = useState(initialContent);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -30,6 +33,7 @@ export function MarkdownNote({
     try {
       await saveDailyNote(content, targetDate);
       toast.success("Đã lưu ghi chú thành công!");
+      router.refresh();
     } catch (error) {
       toast.error("Có lỗi xảy ra khi lưu ghi chú");
     } finally {

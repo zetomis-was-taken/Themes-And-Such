@@ -10,12 +10,15 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, X, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
+import { toast } from "sonner";
+
 interface CourseRequestFormProps {
   requests: CourseRequest[];
   onChange: (requests: CourseRequest[]) => void;
+  availableCourseCodes: string[];
 }
 
-export function CourseRequestForm({ requests, onChange }: CourseRequestFormProps) {
+export function CourseRequestForm({ requests, onChange, availableCourseCodes }: CourseRequestFormProps) {
   const [courseInput, setCourseInput] = useState("");
   const [currentCodes, setCurrentCodes] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState(5);
@@ -23,6 +26,10 @@ export function CourseRequestForm({ requests, onChange }: CourseRequestFormProps
   const handleAddCode = () => {
     const val = courseInput.trim().toUpperCase();
     if (val && !currentCodes.includes(val)) {
+      if (availableCourseCodes.length > 0 && !availableCourseCodes.includes(val)) {
+        toast.error(`Mã môn ${val} không tồn tại trong danh sách lớp mở đã tải lên.`);
+        return;
+      }
       setCurrentCodes([...currentCodes, val]);
       setCourseInput("");
     }
