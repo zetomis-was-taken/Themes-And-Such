@@ -8,6 +8,7 @@ import {
   subClasses,
   userClasses,
 } from "@/lib/db/schema/classes";
+import { classRules } from "@/lib/db/schema/grades";
 import {
   SelectedClass,
   ClassData,
@@ -97,8 +98,9 @@ export async function saveOfficialSchedule(selectedClasses: SelectedClass[]) {
 
   const userId = session.userId;
 
-  // Xóa toàn bộ userClasses cũ
+  // Xóa toàn bộ userClasses cũ và các rule đã tạo
   await db.delete(userClasses).where(eq(userClasses.userId, userId));
+  await db.delete(classRules).where(eq(classRules.userId, userId));
 
   for (const selected of selectedClasses) {
     const classId = await getOrCreateClass(selected.classData);
