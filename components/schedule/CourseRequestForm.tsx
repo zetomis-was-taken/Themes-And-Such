@@ -34,8 +34,17 @@ export function CourseRequestForm({ requests, onChange, availableCourseCodes }: 
       return;
     }
 
-    // Lọc bỏ mã trùng lặp
+    // Lọc bỏ mã trùng lặp trong input
     const uniqueVals = Array.from(new Set(vals));
+
+    // Kiểm tra xem mã môn đã tồn tại trong danh sách yêu cầu chưa
+    const existingCodes = new Set(requests.flatMap(r => r.courseCodes));
+    const duplicateCodes = uniqueVals.filter(val => existingCodes.has(val));
+
+    if (duplicateCodes.length > 0) {
+      toast.error(`Các mã môn sau đã có trong danh sách yêu cầu: ${duplicateCodes.join(", ")}`);
+      return;
+    }
 
     onChange([...requests, {
       courseCodes: uniqueVals,
