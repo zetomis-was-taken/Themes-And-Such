@@ -98,7 +98,7 @@ export default async function DashboardPage() {
   const notesDates = await getNotesDates();
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 px-4 space-y-8 pb-20">
+    <div className="container max-w-7xl mx-auto py-8 px-4 space-y-8 pb-20">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Dashboard

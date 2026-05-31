@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { ClassDataDropzone } from "@/components/schedule/ClassDataDropzone";
+import { UploadedClassesTable } from "@/components/schedule/UploadedClassesTable";
 import { TimeGrid } from "@/components/schedule/TimeGrid";
 import { CourseRequestForm } from "@/components/schedule/CourseRequestForm";
 import { ClassData, CourseRequest, GeneratedSchedule } from "@/lib/algo/types";
@@ -50,7 +51,7 @@ export default function SchedulePage() {
 
   if (results !== null) {
     return (
-      <div className="container max-w-6xl mx-auto py-8 px-4 space-y-8 pb-20">
+      <div className="container max-w-7xl mx-auto py-8 px-4 space-y-8 pb-20">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Kết quả xếp lịch
@@ -65,7 +66,7 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="container max-w-5xl mx-auto py-8 px-4 space-y-8 pb-20">
+    <div className="container max-w-7xl mx-auto py-8 px-4 space-y-8 pb-20">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Tìm lịch học
@@ -76,7 +77,7 @@ export default function SchedulePage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-8 xl:gap-12">
         <div className="space-y-8">
           <section>
             <div className="flex items-center gap-2 mb-4">
@@ -87,10 +88,13 @@ export default function SchedulePage() {
             </div>
             <ClassDataDropzone onDataLoaded={setClasses} />
             {classes.length > 0 && (
-              <p className="text-sm text-green-600 mt-2 font-medium flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>{" "}
-                Đã nạp {classes.length} lớp học.
-              </p>
+              <div className="mt-4 space-y-4">
+                <p className="text-sm text-green-600 font-medium flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>{" "}
+                  Đã nạp {classes.length} lớp học.
+                </p>
+                <UploadedClassesTable classes={classes} />
+              </div>
             )}
           </section>
 

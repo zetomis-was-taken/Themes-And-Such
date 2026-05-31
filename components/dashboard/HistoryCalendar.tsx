@@ -109,7 +109,7 @@ export function HistoryCalendar({
   }
 
   return (
-    <div className="bg-card border rounded-lg shadow-sm overflow-hidden flex flex-col h-full">
+    <div className="bg-card border rounded-lg shadow-sm overflow-hidden flex flex-col h-fit">
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-bold text-lg">
           {MONTH_NAMES[month]}, {year}
@@ -161,7 +161,7 @@ export function HistoryCalendar({
                 {day}
                 {hasNote && (
                   <div
-                    className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${isToday ? "bg-white" : "bg-blue-500"}`}
+                    className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${isToday ? "bg-gray-400" : "bg-blue-500"}`}
                   />
                 )}
               </button>

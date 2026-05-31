@@ -25,7 +25,7 @@ export default async function GradesPage({
   const classesData = await getUserClassesWithGrades();
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 px-4 space-y-8 pb-20">
+    <div className="container max-w-7xl mx-auto py-8 px-4 space-y-8 pb-20">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
           Quản lý Điểm & GPA
