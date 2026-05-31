@@ -53,10 +53,15 @@ export type SelectedClass = z.infer<typeof SelectedClassSchema>;
 export const GeneratedScheduleSchema = z.object({
   classes: z.array(SelectedClassSchema),
   scores: z.object({
+    preferredScore: z.number(),
+    avoidScore: z.number(),
+    balanceScore: z.number(),
+    morningScore: z.number(),
+    afternoonScore: z.number(),
     leftmostScore: z.number(),
     rightmostScore: z.number(),
-    balanceScore: z.number(),
-    preferredScore: z.number(),
+    totalScore: z.number(),
   }),
+  hasViolations: z.boolean().default(false),
 });
 export type GeneratedSchedule = z.infer<typeof GeneratedScheduleSchema>;

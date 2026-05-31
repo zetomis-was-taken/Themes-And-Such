@@ -15,6 +15,7 @@ import {
   scheduleToBitmask,
   WeeklyBitmask,
   countBits,
+  createDailyMask,
 } from "./bitmask";
 
 export class ScheduleGenerator {
@@ -24,6 +25,8 @@ export class ScheduleGenerator {
   private validClassesByCourseCode: Map<string, ClassData[]>;
   private results: GeneratedSchedule[];
   private maxResults: number;
+  private morningMaskTemplate: number;
+  private afternoonMaskTemplate: number;
 
   constructor(params: GeneratorParams) {
     this.params = params;
@@ -36,34 +39,21 @@ export class ScheduleGenerator {
     );
     this.validClassesByCourseCode = new Map();
     this.maxResults = params.maxResults || 1000;
+    
+    // Tiết 1-5 (Sáng)
+    this.morningMaskTemplate = createDailyMask(1, 5);
+    // Tiết 6-12 (Chiều/Tối)
+    this.afternoonMaskTemplate = createDailyMask(6, 12);
   }
 
   public generate(): GeneratedSchedule[] {
     this.preProcessClasses();
-
     this.backtrack([], createEmptyMask(), 0, new Array(6).fill(0));
-
     return this.results;
   }
 
   private preProcessClasses() {
     for (const classData of this.params.availableClasses) {
-      const classMask = scheduleToBitmask(classData.schedule);
-
-      if (checkCollision(classMask, this.forbiddenMask)) continue;
-
-      let hasCollisionInSubClasses = false;
-
-      if (classData.subClasses && classData.subClasses.length > 0) {
-        const validSubs = classData.subClasses.filter(
-          (s) =>
-            !checkCollision(scheduleToBitmask(s.schedule), this.forbiddenMask),
-        );
-        if (validSubs.length === 0) hasCollisionInSubClasses = true;
-      }
-
-      if (hasCollisionInSubClasses) continue;
-
       const existing =
         this.validClassesByCourseCode.get(classData.courseCode) || [];
       existing.push(classData);
@@ -105,10 +95,7 @@ export class ScheduleGenerator {
         if (classData.subClasses && classData.subClasses.length > 0) {
           for (const sub of classData.subClasses) {
             const subMask = scheduleToBitmask(sub.schedule);
-            if (
-              !checkCollision(maskWithMainClass, subMask) &&
-              !checkCollision(this.forbiddenMask, subMask)
-            ) {
+            if (!checkCollision(maskWithMainClass, subMask)) {
               this.commitSelection(
                 currentSelection,
                 mergeMasks(maskWithMainClass, subMask),
@@ -183,34 +170,67 @@ export class ScheduleGenerator {
     let leftmostScore = 0;
     let rightmostScore = 0;
     let preferredScore = 0;
+    let avoidScore = 0;
+    let morningScore = 0;
+    let afternoonScore = 0;
 
     for (let i = 0; i < 6; i++) {
       const dailyMask = finalMask[i];
       const bitCount = countBits(dailyMask);
 
       leftmostScore += bitCount * (6 - i);
-
       rightmostScore += bitCount * (i + 1);
 
       const preferredDailyMask = this.preferredMask[i];
-      const overlappedBits = dailyMask & preferredDailyMask;
-      preferredScore += countBits(overlappedBits);
+      preferredScore += countBits(dailyMask & preferredDailyMask);
+      
+      const avoidDailyMask = this.forbiddenMask[i];
+      avoidScore += countBits(dailyMask & avoidDailyMask);
+
+      morningScore += countBits(dailyMask & this.morningMaskTemplate);
+      afternoonScore += countBits(dailyMask & this.afternoonMaskTemplate);
     }
 
-    const mean = dailyDifficulties.reduce((a, b) => a + b, 0) / 6;
-    const variance =
-      dailyDifficulties.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) /
-      6;
-    const balanceScore = -Math.round(variance * 100) / 100;
+    // Tránh học bị phạt nặng (ví dụ: -20 điểm cho mỗi bit vi phạm)
+    const avoidPenalty = avoidScore * -20;
+    const hasViolations = avoidScore > 0;
+
+    // Tính điểm cân bằng độ khó
+    const activeDaysCount = dailyDifficulties.filter(d => d > 0).length;
+    let balanceScore = 0;
+    if (activeDaysCount > 0) {
+      const sum = dailyDifficulties.reduce((a, b) => a + b, 0);
+      // Chỉ tính trung bình trên các ngày CÓ đi học
+      const mean = sum / activeDaysCount;
+      const variance =
+        dailyDifficulties
+          .filter(d => d > 0)
+          .reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / activeDaysCount;
+      // Nghịch đảo phương sai hoặc dùng dấu âm để cân bằng (phương sai thấp = điểm cao)
+      // Cộng thêm một hằng số để điểm dương
+      balanceScore = Math.max(0, 50 - Math.round(variance * 100) / 100);
+    }
+
+    // Tổng điểm (Trọng số tuỳ chọn, có thể điều chỉnh sau)
+    const totalScore = 
+      preferredScore * 5 + 
+      avoidPenalty + 
+      balanceScore + 
+      (leftmostScore + rightmostScore + morningScore + afternoonScore) / 4;
 
     return {
       classes,
       scores: {
+        preferredScore,
+        avoidScore: avoidPenalty,
+        balanceScore,
+        morningScore,
+        afternoonScore,
         leftmostScore,
         rightmostScore,
-        balanceScore,
-        preferredScore,
+        totalScore: Math.round(totalScore),
       },
+      hasViolations,
     };
   }
 }

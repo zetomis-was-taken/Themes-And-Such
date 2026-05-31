@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { GeneratedSchedule } from "@/lib/algo/types";
 import { ScheduleTable } from "./ScheduleTable";
+import { ScheduleStatistics } from "./ScheduleStatistics";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Save, Info, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, Info, Loader2, AlertTriangle, Star } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { saveOfficialSchedule } from "@/lib/db/schedule/actions";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface ScheduleViewerProps {
   schedules: GeneratedSchedule[];
@@ -35,6 +38,7 @@ export function ScheduleViewer({ schedules, onBack }: ScheduleViewerProps) {
   }
 
   const currentSchedule = schedules[currentIndex];
+  const { scores, hasViolations } = currentSchedule;
 
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : prev));
@@ -69,44 +73,97 @@ export function ScheduleViewer({ schedules, onBack }: ScheduleViewerProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handlePrev}
-            disabled={currentIndex === 0}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleNext}
-            disabled={currentIndex === schedules.length - 1}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <ScheduleStatistics schedules={schedules} />
+          
+          <div className="flex items-center ml-2 gap-1 border rounded-md p-1 bg-muted/30">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              className="h-8 w-8"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleNext}
+              disabled={currentIndex === schedules.length - 1}
+              className="h-8 w-8"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-900 dark:text-blue-300 border border-blue-200 dark:border-blue-800 p-4 rounded-lg flex flex-col justify-center items-center text-center">
-          <span className="text-xs font-semibold uppercase tracking-wider mb-1 opacity-70">
-            Điểm dồn sáng
-          </span>
-          <span className="text-2xl font-bold">
-            {currentSchedule.scores.leftmostScore}
-          </span>
+      {hasViolations && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 p-4 rounded-lg flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 mt-0.5 shrink-0" />
+          <div>
+            <h4 className="font-semibold">Cảnh báo: Vi phạm quy tắc "Tránh học"</h4>
+            <p className="text-sm opacity-90 mt-1">Lịch học này có xếp một số môn vào khung giờ bạn đã đánh dấu Tránh học (Màu đỏ), do đó bị phạt âm điểm ({scores.avoidScore}).</p>
+          </div>
         </div>
-        <div className="bg-amber-50 dark:bg-amber-900/20 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800 p-4 rounded-lg flex flex-col justify-center items-center text-center">
-          <span className="text-xs font-semibold uppercase tracking-wider mb-1 opacity-70">
-            Điểm dồn chiều
-          </span>
-          <span className="text-2xl font-bold">
-            {currentSchedule.scores.rightmostScore}
-          </span>
+      )}
+
+      <Card className="overflow-hidden">
+        <div className="bg-muted/50 p-3 border-b flex justify-between items-center">
+          <h4 className="font-semibold text-sm flex items-center gap-2">
+            <Star className="h-4 w-4 text-amber-500 fill-amber-500" /> Tổng điểm lịch học
+          </h4>
+          <span className="text-xl font-bold text-primary">{scores.totalScore}</span>
         </div>
-      </div>
+        <CardContent className="p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="space-y-1">
+            <div className="text-xs text-muted-foreground uppercase font-medium">Thời gian</div>
+            <div className="flex flex-col gap-1 mt-2">
+              <Badge variant="outline" className="justify-between bg-green-50/50 text-green-700 border-green-200">
+                <span>Ưu tiên:</span> <span className="font-bold">+{scores.preferredScore}</span>
+              </Badge>
+              <Badge variant="outline" className="justify-between bg-red-50/50 text-red-700 border-red-200">
+                <span>Tránh học:</span> <span className="font-bold">{scores.avoidScore}</span>
+              </Badge>
+            </div>
+          </div>
+          
+          <div className="space-y-1">
+            <div className="text-xs text-muted-foreground uppercase font-medium">Dồn lịch trong ngày</div>
+            <div className="flex flex-col gap-1 mt-2">
+              <Badge variant="outline" className="justify-between">
+                <span>Dồn Sáng:</span> <span className="font-bold">+{scores.morningScore}</span>
+              </Badge>
+              <Badge variant="outline" className="justify-between">
+                <span>Dồn Chiều:</span> <span className="font-bold">+{scores.afternoonScore}</span>
+              </Badge>
+            </div>
+          </div>
+          
+          <div className="space-y-1">
+            <div className="text-xs text-muted-foreground uppercase font-medium">Dồn lịch trong tuần</div>
+            <div className="flex flex-col gap-1 mt-2">
+              <Badge variant="outline" className="justify-between">
+                <span>Dồn Đầu Tuần:</span> <span className="font-bold">+{scores.leftmostScore}</span>
+              </Badge>
+              <Badge variant="outline" className="justify-between">
+                <span>Dồn Cuối Tuần:</span> <span className="font-bold">+{scores.rightmostScore}</span>
+              </Badge>
+            </div>
+          </div>
+          
+          <div className="space-y-1">
+            <div className="text-xs text-muted-foreground uppercase font-medium">Cân bằng độ khó</div>
+            <div className="flex flex-col gap-1 mt-2 h-full justify-center">
+              <div className="text-center bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded p-2 border border-blue-100 dark:border-blue-800">
+                <div className="text-2xl font-bold">{scores.balanceScore}</div>
+                <div className="text-[10px] uppercase tracking-wider opacity-70">Điểm cân bằng</div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <ScheduleTable schedule={currentSchedule} />
 

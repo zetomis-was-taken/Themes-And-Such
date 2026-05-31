@@ -21,7 +21,7 @@ export default function SchedulePage() {
     useState<WeeklyBitmask>(createEmptyMask());
   const [requests, setRequests] = useState<CourseRequest[]>([]);
   const [results, setResults] = useState<GeneratedSchedule[] | null>(null);
-  const [sortBy, setSortBy] = useState<string>("balanceScore");
+  const [sortBy, setSortBy] = useState<string>("totalScore");
   const [maxResults, setMaxResults] = useState<number>(50);
 
   const handleGenerate = () => {
@@ -39,9 +39,12 @@ export default function SchedulePage() {
     const generated = generator.generate();
 
     const sorted = [...generated].sort((a, b) => {
+      if (sortBy === "totalScore") return b.scores.totalScore - a.scores.totalScore;
+      if (sortBy === "balanceScore") return b.scores.balanceScore - a.scores.balanceScore;
       if (sortBy === "leftmostScore") return b.scores.leftmostScore - a.scores.leftmostScore;
       if (sortBy === "rightmostScore") return b.scores.rightmostScore - a.scores.rightmostScore;
-      if (sortBy === "balanceScore") return b.scores.balanceScore - a.scores.balanceScore;
+      if (sortBy === "morningScore") return b.scores.morningScore - a.scores.morningScore;
+      if (sortBy === "afternoonScore") return b.scores.afternoonScore - a.scores.afternoonScore;
       if (sortBy === "preferredScore") return b.scores.preferredScore - a.scores.preferredScore;
       return 0;
     });
@@ -142,10 +145,13 @@ export default function SchedulePage() {
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
+                  <option value="totalScore">Tổng hợp tốt nhất (Mặc định)</option>
                   <option value="balanceScore">Lịch cân bằng các ngày</option>
-                  <option value="leftmostScore">Dồn lịch sáng / đầu tuần</option>
-                  <option value="rightmostScore">Dồn lịch chiều / cuối tuần</option>
-                  <option value="preferredScore">Khớp giờ muốn học nhất</option>
+                  <option value="morningScore">Dồn lịch sáng</option>
+                  <option value="afternoonScore">Dồn lịch chiều</option>
+                  <option value="leftmostScore">Dồn lịch đầu tuần</option>
+                  <option value="rightmostScore">Dồn lịch cuối tuần</option>
+                  <option value="preferredScore">Khớp giờ ưu tiên học nhất</option>
                 </select>
               </div>
               <div className="sm:w-32 space-y-1.5">
