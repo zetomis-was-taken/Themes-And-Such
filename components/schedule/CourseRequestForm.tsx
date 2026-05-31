@@ -9,7 +9,6 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Plus, X, Trash2, Edit2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
 interface CourseRequestFormProps {
@@ -19,31 +18,11 @@ interface CourseRequestFormProps {
 }
 
 export function CourseRequestForm({ requests, onChange, availableCourseCodes }: CourseRequestFormProps) {
-  const [tab, setTab] = useState<"single" | "group">("single");
-  const [singleInput, setSingleInput] = useState("");
-  const [groupInput, setGroupInput] = useState("");
+  const [input, setInput] = useState("");
   const [difficulty, setDifficulty] = useState(5);
   
-  const handleAddSingle = () => {
-    const val = singleInput.trim().toUpperCase();
-    if (!val) return;
-    
-    if (availableCourseCodes.length > 0 && !availableCourseCodes.includes(val)) {
-      toast.error(`Mã môn ${val} không tồn tại trong danh sách lớp mở đã tải lên.`);
-      return;
-    }
-    
-    onChange([...requests, {
-      courseCodes: [val],
-      difficulty: difficulty
-    }]);
-    
-    setSingleInput("");
-    setDifficulty(5);
-  };
-
-  const handleAddGroup = () => {
-    const vals = groupInput.trim().toUpperCase().split(/\s+/).filter(v => v);
+  const handleAddRequest = () => {
+    const vals = input.trim().toUpperCase().split(/\s+/).filter(v => v);
     if (vals.length === 0) return;
 
     const invalidCodes = availableCourseCodes.length > 0 
@@ -55,7 +34,7 @@ export function CourseRequestForm({ requests, onChange, availableCourseCodes }: 
       return;
     }
 
-    // Lọc bỏ mã trùng lặp trong nhóm
+    // Lọc bỏ mã trùng lặp
     const uniqueVals = Array.from(new Set(vals));
 
     onChange([...requests, {
@@ -63,7 +42,7 @@ export function CourseRequestForm({ requests, onChange, availableCourseCodes }: 
       difficulty: difficulty
     }]);
 
-    setGroupInput("");
+    setInput("");
     setDifficulty(5);
   };
 
@@ -76,13 +55,7 @@ export function CourseRequestForm({ requests, onChange, availableCourseCodes }: 
   const editRequest = (index: number) => {
     const req = requests[index];
     setDifficulty(req.difficulty);
-    if (req.courseCodes.length === 1) {
-      setTab("single");
-      setSingleInput(req.courseCodes[0]);
-    } else {
-      setTab("group");
-      setGroupInput(req.courseCodes.join(" "));
-    }
+    setInput(req.courseCodes.join(" "));
     // Xoá yêu cầu cũ để thay thế
     removeRequest(index);
     toast.info("Đang chỉnh sửa yêu cầu. Hãy ấn Thêm khi hoàn tất.");
@@ -104,51 +77,28 @@ export function CourseRequestForm({ requests, onChange, availableCourseCodes }: 
     <div className="space-y-6">
       <Card className="border shadow-sm">
         <CardContent className="pt-6 space-y-5">
-          <Tabs value={tab} onValueChange={(val) => setTab(val as "single" | "group")} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-4">
-              <TabsTrigger value="single">Môn Đơn</TabsTrigger>
-              <TabsTrigger value="group">Nhóm Môn</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="single" className="space-y-4">
-              <div className="space-y-2">
-                <Label>Nhập Mã Môn</Label>
-                <Input 
-                  value={singleInput}
-                  onChange={e => setSingleInput(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddSingle(); } }}
-                  placeholder="VD: INT2203"
-                />
-                <p className="text-xs text-muted-foreground">Nhập 1 mã môn duy nhất cần học.</p>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Nhập Mã Môn</Label>
+              <Input 
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddRequest(); } }}
+                placeholder="VD: INT2203 hoặc INT2203 MAT1092"
+              />
+              <p className="text-xs text-muted-foreground">Nhập 1 mã môn, hoặc nhiều mã môn (cách nhau bởi khoảng trắng) có thể thay thế nhau.</p>
+            </div>
+            {input.trim().split(/\s+/).filter(v => v).length > 0 && (
+              <div className="flex flex-wrap gap-2 py-2">
+                {Array.from(new Set(input.trim().toUpperCase().split(/\s+/).filter(v => v))).map(code => (
+                  <Badge key={code} variant="secondary">{code}</Badge>
+                ))}
               </div>
-              <Button type="button" onClick={handleAddSingle} disabled={!singleInput.trim()} className="w-full">
-                <Plus className="h-4 w-4 mr-2" /> Thêm Yêu Cầu
-              </Button>
-            </TabsContent>
-
-            <TabsContent value="group" className="space-y-4">
-              <div className="space-y-2">
-                <Label>Nhập Nhóm Môn (Cách nhau bằng khoảng trắng)</Label>
-                <Input 
-                  value={groupInput}
-                  onChange={e => setGroupInput(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddGroup(); } }}
-                  placeholder="VD: INT2203 MAT1092"
-                />
-                <p className="text-xs text-muted-foreground">Nhập nhiều mã môn có thể thay thế nhau. Phân tách bằng phím Space.</p>
-              </div>
-              {groupInput.trim().split(/\s+/).filter(v => v).length > 0 && (
-                <div className="flex flex-wrap gap-2 py-2">
-                  {Array.from(new Set(groupInput.trim().toUpperCase().split(/\s+/).filter(v => v))).map(code => (
-                    <Badge key={code} variant="secondary">{code}</Badge>
-                  ))}
-                </div>
-              )}
-              <Button type="button" onClick={handleAddGroup} disabled={!groupInput.trim()} className="w-full">
-                <Plus className="h-4 w-4 mr-2" /> Thêm Nhóm Môn
-              </Button>
-            </TabsContent>
-          </Tabs>
+            )}
+            <Button type="button" onClick={handleAddRequest} disabled={!input.trim()} className="w-full">
+              <Plus className="h-4 w-4 mr-2" /> Thêm Yêu Cầu
+            </Button>
+          </div>
 
           <div className="space-y-4 pt-4 border-t">
             <div className="flex justify-between items-center">
