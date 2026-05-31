@@ -136,6 +136,7 @@ export async function createRule(
     ruleName: string;
     ruleType: "INPUT" | "ACCUMULATE";
     weightPercent: number;
+    isQuickInput?: boolean;
   },
 ): Promise<RuleResult> {
   const userId = await requireUserId();
@@ -159,6 +160,7 @@ export async function createRule(
       ruleName: data.ruleName,
       ruleType: data.ruleType,
       weightPercent: String(currentWeightPercent),
+      isQuickInput: data.isQuickInput ?? false,
     })
     .returning();
 
@@ -172,6 +174,7 @@ export async function updateRule(
   data: Partial<{
     ruleName: string;
     weightPercent: number;
+    isQuickInput: boolean;
   }>,
 ): Promise<RuleResult> {
   const userId = await requireUserId();
@@ -207,6 +210,7 @@ export async function updateRule(
   if (data.ruleName !== undefined) update.ruleName = data.ruleName;
   if (data.weightPercent !== undefined)
     update.weightPercent = String(data.weightPercent);
+  if (data.isQuickInput !== undefined) update.isQuickInput = data.isQuickInput;
 
   if (Object.keys(update).length === 0)
     return { success: false, error: "Không có thay đổi nào được cung cấp." };

@@ -20,6 +20,7 @@ export type ClassGradeData = {
     ruleName: string;
     ruleType: "INPUT" | "ACCUMULATE";
     weightPercent: number;
+    isQuickInput: boolean;
     inputValue: number | null;
     accumulateValue: number | null;
     inputId: number | null;
@@ -87,6 +88,7 @@ export async function getUserClassesWithGrades(): Promise<ClassGradeData[]> {
       ruleName: rule.ruleName,
       ruleType: rule.ruleType,
       weightPercent: Number(rule.weightPercent),
+      isQuickInput: rule.isQuickInput,
       inputValue: inputRec ? Number(inputRec.value) : null,
       inputId: inputRec ? inputRec.id : null,
       accumulateValue: accRec ? Number(accRec.value) : null,

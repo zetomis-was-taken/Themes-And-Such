@@ -13,6 +13,8 @@ import { MarkdownNote } from "@/components/dashboard/MarkdownNote";
 import { getDailyNote, getNotesDates } from "@/lib/db/notes/actions";
 import { ClockAndClasses } from "@/components/dashboard/ClockAndClasses";
 import { HistoryCalendar } from "@/components/dashboard/HistoryCalendar";
+import { QuickGradesCard } from "@/components/dashboard/QuickGradesCard";
+import { getUserClassesWithGrades } from "@/lib/grades/queries";
 
 async function getTodaysClasses() {
   const session = await getSession();
@@ -96,6 +98,7 @@ export default async function DashboardPage() {
 
   const initialNote = await getDailyNote(targetDateStr);
   const notesDates = await getNotesDates();
+  const classesWithGrades = await getUserClassesWithGrades();
 
   return (
     <div className="container max-w-7xl mx-auto py-8 px-4 space-y-8 pb-20">
@@ -111,6 +114,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8">
         <div className="space-y-8">
           <ClockAndClasses allClasses={allUserClasses} />
+          <QuickGradesCard classesWithGrades={classesWithGrades} />
         </div>
 
         <div className="space-y-8">

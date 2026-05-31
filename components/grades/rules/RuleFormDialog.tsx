@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -25,6 +25,7 @@ const formSchema = z.object({
   weightPercent: z.number()
     .min(0, "Trọng số tối thiểu 0%")
     .max(100, "Trọng số tối đa 100%"),
+  isQuickInput: z.boolean().default(false),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -43,6 +44,7 @@ export function RuleFormDialog({
     ruleName: string;
     ruleType: "INPUT" | "ACCUMULATE";
     weightPercent: number;
+    isQuickInput: boolean;
   };
 }) {
   const router = useRouter();
@@ -55,8 +57,20 @@ export function RuleFormDialog({
       ruleName: initialData?.ruleName || "",
       ruleType: initialData?.ruleType || "INPUT",
       weightPercent: initialData?.weightPercent || 0,
+      isQuickInput: initialData?.isQuickInput || false,
     },
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        ruleName: initialData?.ruleName || "",
+        ruleType: initialData?.ruleType || "INPUT",
+        weightPercent: initialData?.weightPercent || 0,
+        isQuickInput: initialData?.isQuickInput || false,
+      });
+    }
+  }, [isOpen, initialData, form]);
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
@@ -66,6 +80,7 @@ export function RuleFormDialog({
         res = await updateRule(initialData.id, {
           ruleName: data.ruleName,
           weightPercent: data.weightPercent,
+          isQuickInput: data.isQuickInput,
         });
       } else {
         res = await createRule(classId, data);
@@ -169,6 +184,18 @@ export function RuleFormDialog({
                 {form.formState.errors.weightPercent.message}
               </p>
             )}
+          </div>
+
+          <div className="flex items-center gap-2 pt-2">
+            <input
+              type="checkbox"
+              id="isQuickInput"
+              {...form.register("isQuickInput")}
+              className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300"
+            />
+            <Label htmlFor="isQuickInput" className="cursor-pointer font-normal">
+              Có thể nhập nhanh (Hiển thị ở Dashboard)
+            </Label>
           </div>
 
           <DialogFooter className="pt-4 flex justify-between sm:justify-between w-full">

@@ -4,6 +4,7 @@ import {
   text,
   integer,
   numeric,
+  boolean,
   pgEnum,
 } from "drizzle-orm/pg-core";
 import { timestamps } from "./timestamps";
@@ -26,6 +27,7 @@ export const classRules = pgTable("class_rules", {
     precision: 5,
     scale: 2,
   }).notNull(),
+  isQuickInput: boolean("is_quick_input").default(false).notNull(),
   ...timestamps,
 });
 
