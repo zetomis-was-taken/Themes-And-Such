@@ -19,6 +19,7 @@ export const ClassDataSchema = z.object({
   className: z.string(),
   courseCode: z.string(),
   courseName: z.string(),
+  credits: z.number().optional().default(3),
   schedule: ScheduleTimeSchema,
   subClasses: z.array(SubClassDataSchema).optional(),
 });

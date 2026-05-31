@@ -26,6 +26,7 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
             <TableRow>
               <TableHead className="font-semibold text-foreground">Mã Môn</TableHead>
               <TableHead className="font-semibold text-foreground">Tên Môn</TableHead>
+              <TableHead className="font-semibold text-foreground text-center">Tín Chỉ</TableHead>
               <TableHead className="font-semibold text-foreground">Lớp</TableHead>
               <TableHead className="font-semibold text-foreground">Lịch Học</TableHead>
               <TableHead className="font-semibold text-foreground">Thực Hành</TableHead>
@@ -38,6 +39,7 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
                   {c.courseCode}
                 </TableCell>
                 <TableCell className="font-medium">{c.courseName}</TableCell>
+                <TableCell className="text-center font-semibold text-muted-foreground">{c.credits || 3}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className="font-medium bg-background">
                     {c.className}

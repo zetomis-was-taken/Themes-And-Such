@@ -48,7 +48,15 @@ async function getOrCreateClass(classData: ClassData) {
       eq(classes.className, classData.className),
     ),
   });
-  if (existing) return existing.id;
+  
+  if (existing) {
+    if (existing.credits !== classData.credits && classData.credits !== undefined) {
+      await db.update(classes)
+        .set({ credits: classData.credits })
+        .where(eq(classes.id, existing.id));
+    }
+    return existing.id;
+  }
 
   const scheduleId = await getOrCreateSchedule(classData.schedule);
 
@@ -59,7 +67,7 @@ async function getOrCreateClass(classData: ClassData) {
       courseCode: classData.courseCode,
       courseName: classData.courseName,
       scheduleId: scheduleId,
-      credits: 3, // Default value
+      credits: classData.credits,
     })
     .returning({ id: classes.id });
   return newClass.id;

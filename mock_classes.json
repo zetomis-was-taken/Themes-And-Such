@@ -3,6 +3,7 @@
     "className": "INT3111 1",
     "courseCode": "INT3111",
     "courseName": "Phát triển ứng dụng Web",
+    "credits": 3,
     "schedule": {
       "dayOfWeek": 3,
       "startPeriod": 1,
@@ -14,6 +15,7 @@
     "className": "INT3111 2",
     "courseCode": "INT3111",
     "courseName": "Phát triển ứng dụng Web",
+    "credits": 3,
     "schedule": {
       "dayOfWeek": 4,
       "startPeriod": 4,
@@ -25,6 +27,7 @@
     "className": "INT3110 1",
     "courseCode": "INT3110",
     "courseName": "Phân tích thiết kế hệ thống",
+    "credits": 3,
     "schedule": {
       "dayOfWeek": 5,
       "startPeriod": 1,
@@ -58,6 +61,7 @@
     "className": "MAT1092 1",
     "courseCode": "MAT1092",
     "courseName": "Đại số tuyến tính",
+    "credits": 4,
     "schedule": {
       "dayOfWeek": 2,
       "startPeriod": 1,
@@ -91,6 +95,7 @@
     "className": "MAT1092 2",
     "courseCode": "MAT1092",
     "courseName": "Đại số tuyến tính",
+    "credits": 4,
     "schedule": {
       "dayOfWeek": 3,
       "startPeriod": 4,
@@ -124,6 +129,7 @@
     "className": "PHY1040 1",
     "courseCode": "PHY1040",
     "courseName": "Cơ nhiệt",
+    "credits": 3,
     "schedule": {
       "dayOfWeek": 6,
       "startPeriod": 1,
@@ -135,6 +141,7 @@
     "className": "ENG2020 1",
     "courseCode": "ENG2020",
     "courseName": "Tiếng Anh B1",
+    "credits": 4,
     "schedule": {
       "dayOfWeek": 7,
       "startPeriod": 1,
@@ -146,6 +153,7 @@
     "className": "ENG2020 2",
     "courseCode": "ENG2020",
     "courseName": "Tiếng Anh B1",
+    "credits": 4,
     "schedule": {
       "dayOfWeek": 2,
       "startPeriod": 1,

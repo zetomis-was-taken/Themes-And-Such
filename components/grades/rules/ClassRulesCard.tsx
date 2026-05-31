@@ -25,7 +25,7 @@ export function ClassRulesCard({ classData }: { classData: ClassGradeData }) {
             {classData.courseName}
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
-            {classData.className} • {classData.credits} Tín chỉ
+            {classData.className} • {classData.credits || 3} Tín chỉ
           </p>
         </div>
         <div className="text-right flex flex-col items-end gap-2">

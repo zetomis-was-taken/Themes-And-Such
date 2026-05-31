@@ -5,7 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { GraduationCap, Award, BookOpen } from "lucide-react";
 
 export function GPASummary({ classesData }: { classesData: ClassGradeData[] }) {
-  // Tính tổng số tín chỉ và điểm GPA
+  // Tính tổng số tín chỉ của toàn bộ lịch học
+  const scheduleTotalCredits = classesData.reduce((acc, cls) => acc + (cls.credits || 3), 0);
+
+  // Tính tổng số tín chỉ và điểm GPA (chỉ tính môn đã có điểm)
   let totalCredits = 0;
   let totalScoreCredits = 0;
 
@@ -33,8 +36,9 @@ export function GPASummary({ classesData }: { classesData: ClassGradeData[] }) {
     }
 
     if (hasAnyGrade) {
-      totalCredits += cls.credits;
-      totalScoreCredits += classScore * cls.credits;
+      const clsCredits = cls.credits || 3;
+      totalCredits += clsCredits;
+      totalScoreCredits += classScore * clsCredits;
       classesWithGrades++;
     }
   }
@@ -77,13 +81,13 @@ export function GPASummary({ classesData }: { classesData: ClassGradeData[] }) {
           </div>
           <div>
             <p className="text-muted-foreground font-medium text-sm">
-              Tín chỉ tích lũy (Đã có điểm)
+              Tổng số tín chỉ
             </p>
             <h2 className="text-3xl font-bold text-foreground">
-              {totalCredits}
+              {scheduleTotalCredits}
             </h2>
             <p className="text-xs text-muted-foreground mt-1">
-              Từ {classesWithGrades} môn học
+              Toàn bộ {classesData.length} môn học
             </p>
           </div>
         </CardContent>
