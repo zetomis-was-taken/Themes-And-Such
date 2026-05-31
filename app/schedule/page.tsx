@@ -6,7 +6,11 @@ import { UploadedClassesTable } from "@/components/schedule/UploadedClassesTable
 import { TimeGrid } from "@/components/schedule/TimeGrid";
 import { CourseRequestForm } from "@/components/schedule/CourseRequestForm";
 import { ClassData, CourseRequest, GeneratedSchedule } from "@/lib/algo/types";
-import { WeeklyBitmask, createEmptyMask, maskToSchedules } from "@/lib/algo/bitmask";
+import {
+  WeeklyBitmask,
+  createEmptyMask,
+  maskToSchedules,
+} from "@/lib/algo/bitmask";
 import { ScheduleGenerator } from "@/lib/algo/generator";
 import { ScheduleViewer } from "@/components/schedule/ScheduleViewer";
 import { Button } from "@/components/ui/button";
@@ -32,20 +36,27 @@ export default function SchedulePage() {
         preferredTimes: maskToSchedules(preferredMask),
         forbiddenTimes: maskToSchedules(forbiddenMask),
       },
-      maxResults: maxResults
+      maxResults: maxResults,
     };
 
     const generator = new ScheduleGenerator(payload);
     const generated = generator.generate();
 
     const sorted = [...generated].sort((a, b) => {
-      if (sortBy === "totalScore") return b.scores.totalScore - a.scores.totalScore;
-      if (sortBy === "balanceScore") return b.scores.balanceScore - a.scores.balanceScore;
-      if (sortBy === "leftmostScore") return b.scores.leftmostScore - a.scores.leftmostScore;
-      if (sortBy === "rightmostScore") return b.scores.rightmostScore - a.scores.rightmostScore;
-      if (sortBy === "morningScore") return b.scores.morningScore - a.scores.morningScore;
-      if (sortBy === "afternoonScore") return b.scores.afternoonScore - a.scores.afternoonScore;
-      if (sortBy === "preferredScore") return b.scores.preferredScore - a.scores.preferredScore;
+      if (sortBy === "totalScore")
+        return b.scores.totalScore - a.scores.totalScore;
+      if (sortBy === "balanceScore")
+        return b.scores.balanceScore - a.scores.balanceScore;
+      if (sortBy === "leftmostScore")
+        return b.scores.leftmostScore - a.scores.leftmostScore;
+      if (sortBy === "rightmostScore")
+        return b.scores.rightmostScore - a.scores.rightmostScore;
+      if (sortBy === "morningScore")
+        return b.scores.morningScore - a.scores.morningScore;
+      if (sortBy === "afternoonScore")
+        return b.scores.afternoonScore - a.scores.afternoonScore;
+      if (sortBy === "preferredScore")
+        return b.scores.preferredScore - a.scores.preferredScore;
       return 0;
     });
 
@@ -60,7 +71,8 @@ export default function SchedulePage() {
             Kết quả xếp lịch
           </h1>
           <p className="text-muted-foreground mt-2">
-            Thuật toán đã tìm thấy {results.length} lịch học khả thi dựa trên yêu cầu của bạn.
+            Thuật toán đã tìm thấy {results.length} lịch học khả thi dựa trên
+            yêu cầu của bạn.
           </p>
         </div>
         <ScheduleViewer schedules={results} onBack={() => setResults(null)} />
@@ -110,10 +122,12 @@ export default function SchedulePage() {
               </div>
               <h2 className="text-xl font-semibold">Yêu cầu Môn học</h2>
             </div>
-            <CourseRequestForm 
-              requests={requests} 
-              onChange={setRequests} 
-              availableCourseCodes={Array.from(new Set(classes.map(c => c.courseCode)))}
+            <CourseRequestForm
+              requests={requests}
+              onChange={setRequests}
+              availableCourseCodes={Array.from(
+                new Set(classes.map((c) => c.courseCode)),
+              )}
             />
           </section>
         </div>
@@ -139,24 +153,32 @@ export default function SchedulePage() {
           <div className="pt-8 space-y-4">
             <div className="flex flex-col sm:flex-row gap-4 p-4 rounded-lg border bg-muted/30">
               <div className="flex-1 space-y-1.5">
-                <label className="text-sm font-semibold">Tiêu chí ưu tiên</label>
-                <select 
+                <label className="text-sm font-semibold">
+                  Tiêu chí ưu tiên
+                </label>
+                <select
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
-                  <option value="totalScore">Tổng hợp tốt nhất (Mặc định)</option>
+                  <option value="totalScore">
+                    Tổng hợp tốt nhất (Mặc định)
+                  </option>
                   <option value="balanceScore">Lịch cân bằng các ngày</option>
                   <option value="morningScore">Dồn lịch sáng</option>
                   <option value="afternoonScore">Dồn lịch chiều</option>
                   <option value="leftmostScore">Dồn lịch đầu tuần</option>
                   <option value="rightmostScore">Dồn lịch cuối tuần</option>
-                  <option value="preferredScore">Khớp giờ ưu tiên học nhất</option>
+                  <option value="preferredScore">
+                    Khớp giờ ưu tiên học nhất
+                  </option>
                 </select>
               </div>
-              <div className="sm:w-32 space-y-1.5">
-                <label className="text-sm font-semibold">Max KQ</label>
-                <input 
+              <div className="sm:w-48 space-y-1.5">
+                <label className="text-sm font-semibold">
+                  Số lượng lịch tối đa
+                </label>
+                <input
                   type="number"
                   min="1"
                   max="5000"
