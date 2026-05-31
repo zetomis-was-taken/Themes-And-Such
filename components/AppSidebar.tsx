@@ -63,7 +63,7 @@ export function AppSidebar() {
                 <SidebarMenuButton asChild isActive={pathname === "/dashboard"}>
                   <Link href="/dashboard">
                     <BookOpen className="w-4 h-4 mr-2" />
-                    <span>Notes</span>
+                    <span>Dashboard</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
