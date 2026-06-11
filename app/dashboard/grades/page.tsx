@@ -20,7 +20,8 @@ export default async function GradesPage({
   }
 
   const resolvedParams = await searchParams;
-  const tab = typeof resolvedParams.tab === "string" ? resolvedParams.tab : "entry";
+  const tab =
+    typeof resolvedParams.tab === "string" ? resolvedParams.tab : "entry";
 
   const classesData = await getUserClassesWithGrades();
 

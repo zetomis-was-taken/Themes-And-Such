@@ -66,7 +66,7 @@ export default function AuthTabs({
   return (
     <Card className="w-full max-w-md shadow-xl border-gray-200">
       <CardHeader className="text-center pb-2">
-        <CardTitle className="text-2xl font-bold text-gray-900">
+        <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           Portal Helper
         </CardTitle>
         <CardDescription>
