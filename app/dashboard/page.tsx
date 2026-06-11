@@ -86,7 +86,7 @@ async function getTodaysClasses() {
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session) {
-    redirect("/login");
+    redirect("/auth?tab=login");
   }
 
   const allUserClasses = await getTodaysClasses();
