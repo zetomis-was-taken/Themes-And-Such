@@ -3,8 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getCurrentUser } from "@/lib/auth/actions";
 import { UserProvider } from "@/lib/auth/user-provider";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -44,16 +42,8 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <UserProvider initialUser={user}>
-            <SidebarProvider>
-              <AppSidebar />
-              <main className="flex-1 flex flex-col min-w-0">
-                <div className="md:hidden p-4">
-                  <SidebarTrigger />
-                </div>
-                {children}
-              </main>
-              <Toaster />
-            </SidebarProvider>
+            {children}
+            <Toaster />
           </UserProvider>
         </ThemeProvider>
       </body>
