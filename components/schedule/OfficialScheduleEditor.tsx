@@ -10,6 +10,7 @@ import {
 } from "@/lib/algo/types";
 import { ScheduleTable } from "./ScheduleTable";
 import { ClassDataDropzone } from "./ClassDataDropzone";
+import { UploadedClassesTable } from "./UploadedClassesTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -303,7 +304,17 @@ export function OfficialScheduleEditor({
                 />
 
                 {jsonClasses.length > 0 && (
-                  <div className="space-y-4 mt-6">
+                  <div className="mt-4 space-y-4">
+                    <p className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>{" "}
+                      Đã nạp {jsonClasses.length} lớp học.
+                    </p>
+                    <UploadedClassesTable classes={jsonClasses} />
+                  </div>
+                )}
+
+                {jsonClasses.length > 0 && (
+                  <div className="space-y-4 mt-6 border-t pt-6">
                     <div className="space-y-2">
                       <Label>Nhập mã môn học</Label>
                       <Input
