@@ -337,7 +337,7 @@ export function OfficialScheduleEditor({
                     {selectedClassData?.subClasses &&
                       selectedClassData.subClasses.length > 0 && (
                         <div className="space-y-2 border-l-2 border-primary pl-4 py-1">
-                          <Label>Môn này có lớp phụ, chọn nhóm:</Label>
+                          <Label>Chọn nhóm thực hành/bài tập</Label>
                           <Select
                             value={selectedSubClassGroup}
                             onValueChange={setSelectedSubClassGroup}
@@ -485,7 +485,7 @@ export function OfficialScheduleEditor({
                         htmlFor="hasSubClass"
                         className="font-semibold cursor-pointer"
                       >
-                        Môn này có lớp phụ (Thực hành/Bài tập)
+                        Lớp thực hành/bài tập
                       </Label>
                     </div>
 
