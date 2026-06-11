@@ -13,7 +13,12 @@ const DUMMY_SCHEDULE: GeneratedSchedule = {
         courseCode: "MAT1092",
         courseName: "Đại số",
         credits: 3,
-        schedule: { dayOfWeek: 2, startPeriod: 1, endPeriod: 3, room: "201-G2" },
+        schedule: {
+          dayOfWeek: 2,
+          startPeriod: 1,
+          endPeriod: 3,
+          room: "201-G2",
+        },
       },
     },
     {
@@ -22,12 +27,22 @@ const DUMMY_SCHEDULE: GeneratedSchedule = {
         courseCode: "PHY1047",
         courseName: "Vật lý đại cương 1",
         credits: 3,
-        schedule: { dayOfWeek: 3, startPeriod: 4, endPeriod: 6, room: "302-G3" },
+        schedule: {
+          dayOfWeek: 3,
+          startPeriod: 4,
+          endPeriod: 6,
+          room: "302-G3",
+        },
       },
       selectedSubClass: {
         type: "practical",
         groupCode: "1",
-        schedule: { dayOfWeek: 4, startPeriod: 7, endPeriod: 9, room: "PM1-G3" },
+        schedule: {
+          dayOfWeek: 4,
+          startPeriod: 7,
+          endPeriod: 9,
+          room: "PM1-G3",
+        },
       },
     },
     {
@@ -36,7 +51,12 @@ const DUMMY_SCHEDULE: GeneratedSchedule = {
         courseCode: "INT2204",
         courseName: "Lập trình hướng đối tượng",
         credits: 3,
-        schedule: { dayOfWeek: 5, startPeriod: 7, endPeriod: 9, room: "301-G2" },
+        schedule: {
+          dayOfWeek: 5,
+          startPeriod: 7,
+          endPeriod: 9,
+          room: "301-G2",
+        },
       },
     },
     {
@@ -45,7 +65,12 @@ const DUMMY_SCHEDULE: GeneratedSchedule = {
         courseCode: "POL1001",
         courseName: "Triết học Mác-Lênin",
         credits: 3,
-        schedule: { dayOfWeek: 6, startPeriod: 1, endPeriod: 3, room: "101-G2" },
+        schedule: {
+          dayOfWeek: 6,
+          startPeriod: 1,
+          endPeriod: 3,
+          room: "101-G2",
+        },
       },
     },
   ],
@@ -66,14 +91,14 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-background">
       {/* Background Gradients */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/20 dark:bg-blue-600/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/20 dark:bg-purple-600/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-teal-500/20 dark:bg-teal-600/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500/20 dark:bg-emerald-600/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
 
       {/* Header */}
       <header className="container mx-auto px-4 py-6 flex justify-between items-center z-10">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-          <span className="font-bold text-xl tracking-tight text-blue-600 dark:text-blue-400">
+          {/* <Sparkles className="w-6 h-6 text-teal-600 dark:text-teal-400" /> */}
+          <span className="font-bold text-xl tracking-tight text-teal-600 dark:text-teal-400">
             Portal Helper
           </span>
         </div>
@@ -91,29 +116,33 @@ export default function LandingPage() {
       {/* Hero Section */}
       <main className="flex-1 container mx-auto px-4 flex flex-col items-center justify-center pt-12 pb-24 z-10">
         <div className="text-center max-w-3xl space-y-6 mb-16">
-          <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary/10 text-primary hover:bg-primary/20 mb-4">
-            🚀 Tối ưu hóa thời gian của bạn
-          </div>
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]">
             Xếp Lịch Học <br className="hidden sm:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400">
               Thông Minh Hơn Bao Giờ Hết
             </span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
-            Portal Helper giúp bạn tự động hóa việc xếp lịch, theo dõi điểm số, 
+            Portal Helper giúp bạn tự động hóa việc xếp lịch, theo dõi điểm số,
             và lên kế hoạch học tập hoàn hảo chỉ với vài cú click chuột.
           </p>
           <div className="flex justify-center gap-4 pt-4">
-            <Button asChild size="lg" className="rounded-full px-8 gap-2 text-base shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all">
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full px-8 gap-2 text-base shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 transition-all bg-teal-600 hover:bg-teal-700 text-white"
+            >
               <Link href="/dashboard">
                 Vào Dashboard <ArrowRight className="w-4 h-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="rounded-full px-8 text-base bg-background/50 backdrop-blur-sm">
-              <Link href="/schedule">
-                Thử xếp lịch
-              </Link>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="rounded-full px-8 text-base bg-background/50 backdrop-blur-sm border-teal-500/30 hover:bg-teal-500/10"
+            >
+              <Link href="/schedule">Thử xếp lịch</Link>
             </Button>
           </div>
         </div>
