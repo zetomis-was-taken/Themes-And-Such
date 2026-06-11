@@ -26,7 +26,7 @@ export default async function ScheduleEditPage() {
             Thêm, xóa hoặc chỉnh sửa các môn học trong lịch chính thức của bạn.
           </p>
         </div>
-        <Link href="/schedule/view">
+        <Link href="/my-schedule/export">
           <Button variant="outline" className="shrink-0 bg-primary/5 hover:bg-primary/10 border-primary/20">
             <ImageIcon className="w-4 h-4 mr-2 text-primary" />
             Tùy chỉnh & Xuất Ảnh

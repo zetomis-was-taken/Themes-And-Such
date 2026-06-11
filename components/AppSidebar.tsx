@@ -29,7 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BookOpen, CalendarPlus, GraduationCap } from "lucide-react";
+import { BookOpen, CalendarPlus, GraduationCap, CalendarDays } from "lucide-react";
 
 export function AppSidebar() {
   const [user, setUser] = useAtom(userAtom);
@@ -69,10 +69,19 @@ export function AppSidebar() {
               </SidebarMenuItem>
 
               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/my-schedule")}>
+                  <Link href="/my-schedule">
+                    <CalendarDays className="w-4 h-4 mr-2" />
+                    <span>Lịch Của Tôi</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={pathname === "/schedule"}>
                   <Link href="/schedule">
                     <CalendarPlus className="w-4 h-4 mr-2" />
-                    <span>Tạo lịch</span>
+                    <span>Xếp Lịch Tự Động</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

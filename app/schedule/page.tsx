@@ -84,21 +84,16 @@ export default function SchedulePage() {
 
   return (
     <div className="container max-w-7xl mx-auto py-8 px-4 space-y-8 pb-20">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="mb-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Tìm lịch học
+            Xếp Lịch Tự Động
           </h1>
           <p className="text-muted-foreground mt-2">
             Tải lên danh sách lớp mở, thiết lập thời gian và nhóm môn học để thuật
             toán xếp lịch tốt nhất cho bạn.
           </p>
         </div>
-        <Link href="/schedule/edit">
-          <Button variant="outline" className="shrink-0">
-            Tự tạo / Chỉnh sửa lịch
-          </Button>
-        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-8 xl:gap-12">
