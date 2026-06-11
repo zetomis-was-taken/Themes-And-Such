@@ -3,6 +3,7 @@ import { GeneratedSchedule } from "@/lib/algo/types";
 
 interface ScheduleTableProps {
   schedule: GeneratedSchedule;
+  onRemoveClass?: (index: number) => void;
 }
 
 const DAYS = [2, 3, 4, 5, 6, 7];
@@ -19,7 +20,9 @@ const COLORS = [
   "bg-indigo-100 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-800 text-indigo-800 dark:text-indigo-300",
 ];
 
-export function ScheduleTable({ schedule }: ScheduleTableProps) {
+import { X } from "lucide-react";
+
+export function ScheduleTable({ schedule, onRemoveClass }: ScheduleTableProps) {
   return (
     <div className="w-full overflow-x-auto border rounded-lg bg-card shadow-sm">
       <div
@@ -77,14 +80,22 @@ export function ScheduleTable({ schedule }: ScheduleTableProps) {
             <React.Fragment key={`class-${idx}`}>
               {/* Main Class */}
               <div
-                className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5 z-20 ${colorClass}`}
+                className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5 z-20 relative ${colorClass}`}
                 style={{
                   gridColumn: main.schedule.dayOfWeek - 2 + 2,
                   gridRowStart: (main.schedule.startPeriod - 1) * 2 + 2,
                   gridRowEnd: main.schedule.endPeriod * 2 + 2,
                 }}
               >
-                <div className="font-bold line-clamp-2">{main.courseName}</div>
+                {onRemoveClass && (
+                  <button 
+                    onClick={() => onRemoveClass(idx)}
+                    className="absolute top-1 right-1 p-0.5 rounded-full bg-background/50 hover:bg-destructive/90 hover:text-destructive-foreground transition-colors z-30"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+                <div className="font-bold line-clamp-2 pr-4">{main.courseName}</div>
                 <div className="font-medium opacity-90">{main.className}</div>
                 <div className="mt-auto flex justify-between items-end text-[10px] opacity-80">
                   <span>{main.courseCode}</span>
@@ -95,7 +106,7 @@ export function ScheduleTable({ schedule }: ScheduleTableProps) {
               {/* Sub Class if any */}
               {sub && (
                 <div
-                  className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5 z-20 ${colorClass}`}
+                  className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5 z-20 relative ${colorClass}`}
                   style={{
                     gridColumn: sub.schedule.dayOfWeek - 2 + 2,
                     gridRowStart: (sub.schedule.startPeriod - 1) * 2 + 2,
@@ -104,7 +115,15 @@ export function ScheduleTable({ schedule }: ScheduleTableProps) {
                       "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.3) 10px, rgba(255,255,255,0.3) 20px)",
                   }}
                 >
-                  <div className="font-bold line-clamp-1">
+                  {onRemoveClass && (
+                    <button 
+                      onClick={() => onRemoveClass(idx)}
+                      className="absolute top-1 right-1 p-0.5 rounded-full bg-background/50 hover:bg-destructive/90 hover:text-destructive-foreground transition-colors z-30"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                  <div className="font-bold line-clamp-1 pr-4">
                     {main.courseName}{" "}
                     <span className="opacity-75 font-normal">
                       ({sub.type === "practical" ? "TH" : "BT"})

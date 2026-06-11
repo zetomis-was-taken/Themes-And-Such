@@ -25,7 +25,7 @@ const formSchema = z.object({
   weightPercent: z.number()
     .min(0, "Trọng số tối thiểu 0%")
     .max(100, "Trọng số tối đa 100%"),
-  isQuickInput: z.boolean().default(false),
+  isQuickInput: z.boolean(),
 });
 
 type FormData = z.infer<typeof formSchema>;

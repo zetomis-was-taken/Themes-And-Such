@@ -16,7 +16,7 @@ import {
   ScheduleTime,
 } from "@/lib/algo/types";
 import { getSession } from "@/lib/auth/session";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 async function getOrCreateSchedule(scheduleData: ScheduleTime) {
   const existing = await db.query.schedules.findFirst({
@@ -126,6 +126,162 @@ export async function saveOfficialSchedule(selectedClasses: SelectedClass[]) {
       classId,
       subClassId,
     });
+  }
+
+  return { success: true };
+}
+
+export async function getOfficialSchedule(): Promise<SelectedClass[]> {
+  const session = await getSession();
+  if (!session) return [];
+
+  const userId = session.userId;
+
+  const userEnrolledClasses = await db
+    .select({
+      classData: classes,
+      subClassData: subClasses,
+    })
+    .from(userClasses)
+    .innerJoin(classes, eq(userClasses.classId, classes.id))
+    .leftJoin(subClasses, eq(userClasses.subClassId, subClasses.id))
+    .where(eq(userClasses.userId, userId));
+
+  if (userEnrolledClasses.length === 0) return [];
+
+  const scheduleIds = new Set<number>();
+  userEnrolledClasses.forEach((c) => {
+    scheduleIds.add(c.classData.scheduleId);
+    if (c.subClassData?.scheduleId) scheduleIds.add(c.subClassData.scheduleId);
+  });
+
+  const schedulesData = await db
+    .select()
+    .from(schedules)
+    .where(inArray(schedules.id, Array.from(scheduleIds)));
+
+  const schedulesMap = new Map(schedulesData.map((s) => [s.id, s]));
+
+  const result: SelectedClass[] = [];
+  userEnrolledClasses.forEach((c) => {
+    const mainSched = schedulesMap.get(c.classData.scheduleId);
+    if (!mainSched) return;
+
+    const classData: ClassData = {
+      className: c.classData.className,
+      courseCode: c.classData.courseCode,
+      courseName: c.classData.courseName,
+      credits: c.classData.credits || 3,
+      schedule: {
+        dayOfWeek: parseInt(mainSched.dayOfWeek) || 2,
+        startPeriod: mainSched.startPeriod,
+        endPeriod: mainSched.endPeriod,
+        room: mainSched.room || "",
+      },
+      subClasses: [], 
+    };
+
+    let selectedSubClass: SubClassData | undefined = undefined;
+    if (c.subClassData) {
+      const subSched = schedulesMap.get(c.subClassData.scheduleId);
+      if (subSched) {
+        selectedSubClass = {
+          type: "practical", 
+          groupCode: c.subClassData.groupCode,
+          schedule: {
+            dayOfWeek: parseInt(subSched.dayOfWeek) || 2,
+            startPeriod: subSched.startPeriod,
+            endPeriod: subSched.endPeriod,
+            room: subSched.room || "",
+          },
+        };
+      }
+    }
+
+    result.push({
+      classData,
+      selectedSubClass,
+    });
+  });
+
+  return result;
+}
+
+export async function addOfficialClass(selected: SelectedClass) {
+  const session = await getSession();
+  if (!session) throw new Error("Unauthorized");
+  const userId = session.userId;
+
+  const classId = await getOrCreateClass(selected.classData);
+  let subClassId: number | undefined;
+
+  if (selected.selectedSubClass) {
+    subClassId = await getOrCreateSubClass(classId, selected.selectedSubClass);
+  }
+
+  // Check if user already has this exact user_class entry
+  const existing = await db.query.userClasses.findFirst({
+    where: and(
+      eq(userClasses.userId, userId),
+      eq(userClasses.classId, classId),
+      subClassId ? eq(userClasses.subClassId, subClassId) : undefined
+    )
+  });
+
+  if (!existing) {
+    await db.insert(userClasses).values({
+      userId,
+      classId,
+      subClassId,
+    });
+  }
+
+  return { success: true };
+}
+
+export async function removeOfficialClass(courseCode: string, groupCode?: string) {
+  const session = await getSession();
+  if (!session) throw new Error("Unauthorized");
+  const userId = session.userId;
+
+  // Find the class by courseCode
+  const clazz = await db.query.classes.findFirst({
+    where: eq(classes.courseCode, courseCode)
+  });
+  
+  if (!clazz) return { success: false };
+
+  let subClassId: number | undefined = undefined;
+  if (groupCode) {
+    const subClass = await db.query.subClasses.findFirst({
+      where: and(
+        eq(subClasses.classId, clazz.id),
+        eq(subClasses.groupCode, groupCode)
+      )
+    });
+    if (subClass) subClassId = subClass.id;
+  }
+
+  if (groupCode && !subClassId) {
+    return { success: false }; // specified subclass not found
+  }
+
+  if (subClassId) {
+    await db.delete(userClasses).where(
+      and(
+        eq(userClasses.userId, userId),
+        eq(userClasses.classId, clazz.id),
+        eq(userClasses.subClassId, subClassId)
+      )
+    );
+  } else {
+    // If no subclass specified, delete all userClasses matching this class
+    await db.delete(userClasses).where(
+      and(
+        eq(userClasses.userId, userId),
+        eq(userClasses.classId, clazz.id)
+      )
+    );
   }
 
   return { success: true };
