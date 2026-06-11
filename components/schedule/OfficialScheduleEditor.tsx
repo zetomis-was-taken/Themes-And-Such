@@ -26,6 +26,8 @@ export function OfficialScheduleEditor({ initialSchedule }: OfficialScheduleEdit
   const [selectedClassId, setSelectedClassId] = useState<string>("");
   const [selectedSubClassGroup, setSelectedSubClassGroup] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState("json");
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const { register, handleSubmit, reset, watch, setValue } = useForm({
     defaultValues: {
@@ -59,13 +61,16 @@ export function OfficialScheduleEditor({ initialSchedule }: OfficialScheduleEdit
     return availableClasses.find(c => c.className === selectedClassId) || null;
   }, [availableClasses, selectedClassId]);
 
-  const checkTimeConflict = (newClass: SelectedClass, currentSchedule: SelectedClass[]) => {
+  const checkTimeConflict = (newClass: SelectedClass, currentSchedule: SelectedClass[], ignoreIndex?: number | null) => {
     const timesToCheck: ScheduleTime[] = [newClass.classData.schedule];
     if (newClass.selectedSubClass) {
       timesToCheck.push(newClass.selectedSubClass.schedule);
     }
 
-    for (const existing of currentSchedule) {
+    for (let i = 0; i < currentSchedule.length; i++) {
+      if (ignoreIndex !== undefined && ignoreIndex !== null && i === ignoreIndex) continue;
+      
+      const existing = currentSchedule[i];
       const existingTimes: ScheduleTime[] = [existing.classData.schedule];
       if (existing.selectedSubClass) {
         existingTimes.push(existing.selectedSubClass.schedule);
@@ -150,17 +155,63 @@ export function OfficialScheduleEditor({ initialSchedule }: OfficialScheduleEdit
       selectedSubClass,
     };
 
-    if (checkTimeConflict(newClass, mySchedule)) {
+    if (checkTimeConflict(newClass, mySchedule, editingIndex)) {
       toast.error("Lớp này bị trùng thời gian với lịch hiện tại!");
       return;
     }
 
-    setMySchedule([...mySchedule, newClass]);
-    toast.success("Đã thêm lớp học thủ công vào lịch");
+    if (editingIndex !== null) {
+      const updated = [...mySchedule];
+      updated[editingIndex] = newClass;
+      setMySchedule(updated);
+      toast.success("Đã cập nhật lớp học thành công");
+      setEditingIndex(null);
+    } else {
+      setMySchedule([...mySchedule, newClass]);
+      toast.success("Đã thêm lớp học thủ công vào lịch");
+    }
+    reset();
+  };
+
+  const handleEditClass = (index: number) => {
+    setEditingIndex(index);
+    setActiveTab("manual");
+    const target = mySchedule[index];
+    const { classData, selectedSubClass } = target;
+    
+    setValue("courseCode", classData.courseCode);
+    setValue("className", classData.className);
+    setValue("courseName", classData.courseName);
+    setValue("credits", classData.credits);
+    setValue("dayOfWeek", classData.schedule.dayOfWeek.toString());
+    setValue("startPeriod", classData.schedule.startPeriod.toString());
+    setValue("endPeriod", classData.schedule.endPeriod.toString());
+    setValue("room", classData.schedule.room || "");
+
+    if (selectedSubClass) {
+      setValue("hasSubClass", true);
+      setValue("subType", selectedSubClass.type);
+      setValue("subGroupCode", selectedSubClass.groupCode);
+      setValue("subDayOfWeek", selectedSubClass.schedule.dayOfWeek.toString());
+      setValue("subStartPeriod", selectedSubClass.schedule.startPeriod.toString());
+      setValue("subEndPeriod", selectedSubClass.schedule.endPeriod.toString());
+      setValue("subRoom", selectedSubClass.schedule.room || "");
+    } else {
+      setValue("hasSubClass", false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingIndex(null);
     reset();
   };
 
   const handleRemoveClass = (index: number) => {
+    if (editingIndex === index) {
+      handleCancelEdit();
+    } else if (editingIndex !== null && editingIndex > index) {
+      setEditingIndex(editingIndex - 1);
+    }
     setMySchedule(prev => prev.filter((_, i) => i !== index));
   };
 
@@ -188,7 +239,7 @@ export function OfficialScheduleEditor({ initialSchedule }: OfficialScheduleEdit
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8">
       <div className="space-y-6">
-        <Tabs defaultValue="json" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="json">Từ File JSON</TabsTrigger>
             <TabsTrigger value="manual">Nhập Thủ Công</TabsTrigger>
@@ -377,10 +428,22 @@ export function OfficialScheduleEditor({ initialSchedule }: OfficialScheduleEdit
                     )}
                   </div>
 
-                  <Button type="submit" className="w-full">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Kiểm tra & Thêm vào lịch
-                  </Button>
+                  {editingIndex !== null ? (
+                    <div className="flex gap-2 w-full">
+                      <Button type="button" variant="outline" className="flex-1" onClick={handleCancelEdit}>
+                        Hủy sửa
+                      </Button>
+                      <Button type="submit" className="flex-1">
+                        <Save className="w-4 h-4 mr-2" />
+                        Cập nhật
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button type="submit" className="w-full">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Kiểm tra & Thêm vào lịch
+                    </Button>
+                  )}
                 </form>
               </CardContent>
             </Card>
@@ -409,7 +472,12 @@ export function OfficialScheduleEditor({ initialSchedule }: OfficialScheduleEdit
         </div>
 
         {mySchedule.length > 0 ? (
-          <ScheduleTable schedule={pseudoSchedule} onRemoveClass={handleRemoveClass} />
+          <ScheduleTable 
+            schedule={pseudoSchedule} 
+            onRemoveClass={handleRemoveClass} 
+            onEditClass={handleEditClass}
+            editingIndex={editingIndex}
+          />
         ) : (
           <div className="flex flex-col items-center justify-center p-12 text-center border rounded-lg bg-muted/10 border-dashed">
             <p className="text-muted-foreground">Chưa có môn học nào trong lịch.</p>
