@@ -1,6 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useAtom } from "jotai";
+import {
+  classesAtom,
+  preferredMaskAtom,
+  forbiddenMaskAtom,
+  requestsAtom,
+  sortByAtom,
+  maxResultsAtom,
+  resultsAtom
+} from "@/lib/store/scheduleAtoms";
 import { ClassDataDropzone } from "@/components/schedule/ClassDataDropzone";
 import { UploadedClassesTable } from "@/components/schedule/UploadedClassesTable";
 import { TimeGrid } from "@/components/schedule/TimeGrid";
@@ -20,15 +30,13 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 
 export default function SchedulePage() {
-  const [classes, setClasses] = useState<ClassData[]>([]);
-  const [preferredMask, setPreferredMask] =
-    useState<WeeklyBitmask>(createEmptyMask());
-  const [forbiddenMask, setForbiddenMask] =
-    useState<WeeklyBitmask>(createEmptyMask());
-  const [requests, setRequests] = useState<CourseRequest[]>([]);
-  const [results, setResults] = useState<GeneratedSchedule[] | null>(null);
-  const [sortBy, setSortBy] = useState<string>("totalScore");
-  const [maxResults, setMaxResults] = useState<number>(50);
+  const [classes, setClasses] = useAtom(classesAtom);
+  const [preferredMask, setPreferredMask] = useAtom(preferredMaskAtom);
+  const [forbiddenMask, setForbiddenMask] = useAtom(forbiddenMaskAtom);
+  const [requests, setRequests] = useAtom(requestsAtom);
+  const [results, setResults] = useAtom(resultsAtom);
+  const [sortBy, setSortBy] = useAtom(sortByAtom);
+  const [maxResults, setMaxResults] = useAtom(maxResultsAtom);
 
   const handleGenerate = () => {
     const payload = {
