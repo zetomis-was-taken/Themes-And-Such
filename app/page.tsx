@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { ScheduleTable } from "@/components/schedule/ScheduleTable";
@@ -115,18 +118,38 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main className="flex-1 container mx-auto px-4 flex flex-col items-center justify-center pt-12 pb-24 z-10">
-        <div className="text-center max-w-3xl space-y-6 mb-16">
-          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center max-w-3xl space-y-6 mb-16"
+        >
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]"
+          >
             Xếp Lịch Học <br className="hidden sm:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-amber-500 dark:to-amber-400">
               Thông Minh Hơn Bao Giờ Hết
             </span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-lg md:text-xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed"
+          >
             Portal Helper giúp bạn tự động hóa việc xếp lịch, theo dõi điểm số,
             và lên kế hoạch học tập hoàn hảo chỉ với vài cú click chuột.
-          </p>
-          <div className="flex justify-center gap-4 pt-4">
+          </motion.p>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex justify-center gap-4 pt-4"
+          >
             <Button
               asChild
               size="lg"
@@ -143,11 +166,16 @@ export default function LandingPage() {
             >
               <Link href="/schedule">Thử xếp lịch</Link>
             </Button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Schedule Preview Section */}
-        <div className="w-full max-w-5xl rounded-xl border bg-card/80 backdrop-blur-xl shadow-2xl overflow-hidden">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95, y: 30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ type: "spring", bounce: 0.4, duration: 0.8, delay: 0.4 }}
+          className="w-full max-w-5xl rounded-xl border bg-card/80 backdrop-blur-xl shadow-2xl overflow-hidden"
+        >
           <div className="border-b bg-muted/50 px-4 py-3 flex items-center justify-between">
             <div className="flex gap-2">
               <div className="w-3 h-3 rounded-full bg-red-500/80" />
@@ -166,7 +194,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </main>
 
       {/* Footer */}

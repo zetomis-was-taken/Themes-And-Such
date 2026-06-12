@@ -2,6 +2,7 @@
 
 import { ClassGradeData } from "@/lib/grades/queries";
 import { ClassRulesCard } from "./ClassRulesCard";
+import { motion } from "framer-motion";
 
 export function RulesTab({ classesData }: { classesData: ClassGradeData[] }) {
   if (classesData.length === 0) {
@@ -27,8 +28,15 @@ export function RulesTab({ classesData }: { classesData: ClassGradeData[] }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {classesData.map((cls) => (
-          <ClassRulesCard key={cls.classId} classData={cls} />
+        {classesData.map((cls, idx) => (
+          <motion.div 
+            key={cls.classId}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: idx * 0.1 }}
+          >
+            <ClassRulesCard classData={cls} />
+          </motion.div>
         ))}
       </div>
     </div>

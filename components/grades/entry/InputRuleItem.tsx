@@ -90,7 +90,7 @@ export function InputRuleItem({
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
-            <Check className="w-4 h-4 text-green-600" />
+            <Check className="w-4 h-4 text-green-600 dark:text-amber-200" />
           )}
         </Button>
       </div>

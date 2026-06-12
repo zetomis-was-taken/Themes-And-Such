@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { motion } from "framer-motion";
 import { GeneratedSchedule } from "@/lib/algo/types";
 import { getCourseSemesterHalf, SemesterHalf } from "@/lib/algo/bitmask";
 
@@ -95,8 +98,11 @@ export function ScheduleTable({ schedule, onRemoveClass, onEditClass, editingInd
           return (
             <React.Fragment key={`class-${idx}`}>
               {/* Main Class */}
-              <div
-                className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5 z-20 relative ${colorClass} ${blockStyle} ${placementStyle}`}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25, delay: idx * 0.05 }}
+                className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-shadow hover:shadow-md hover:ring-1 hover:ring-primary z-20 relative ${colorClass} ${blockStyle} ${placementStyle}`}
                 style={{
                   gridColumn: main.schedule.dayOfWeek - 2 + 2,
                   gridRowStart: (main.schedule.startPeriod - 1) * 2 + 2,
@@ -134,12 +140,15 @@ export function ScheduleTable({ schedule, onRemoveClass, onEditClass, editingInd
                   <span>{main.courseCode}</span>
                   <span className="font-medium">{main.schedule.room}</span>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Sub Class if any */}
               {sub && (
-                <div
-                  className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5 z-20 relative ${colorClass} ${blockStyle} ${placementStyle}`}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25, delay: idx * 0.05 + 0.05 }}
+                  className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-shadow hover:shadow-md hover:ring-1 hover:ring-primary z-20 relative ${colorClass} ${blockStyle} ${placementStyle}`}
                   style={{
                     gridColumn: sub.schedule.dayOfWeek - 2 + 2,
                     gridRowStart: (sub.schedule.startPeriod - 1) * 2 + 2,
@@ -186,7 +195,7 @@ export function ScheduleTable({ schedule, onRemoveClass, onEditClass, editingInd
                     <span>{main.courseCode}</span>
                     <span className="font-medium">{sub.schedule.room}</span>
                   </div>
-                </div>
+                </motion.div>
               )}
             </React.Fragment>
           );
