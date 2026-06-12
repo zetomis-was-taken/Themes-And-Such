@@ -39,7 +39,7 @@ export function ScheduleTable({ schedule, onRemoveClass, onEditClass, editingInd
         }}
       >
         {/* Headers */}
-        <div className="sticky top-0 left-0 z-10 bg-muted/80 border-b border-r flex items-center justify-center font-semibold text-sm">
+        <div className="sticky top-0 left-0 z-30 bg-muted border-b border-r flex items-center justify-center font-semibold text-sm">
           Tiết
         </div>
         {DAYS.map((day) => (
@@ -57,7 +57,7 @@ export function ScheduleTable({ schedule, onRemoveClass, onEditClass, editingInd
           return (
             <React.Fragment key={`bg-row-${period}`}>
               <div
-                className="border-b border-r bg-muted/10 flex items-center justify-center text-xs text-muted-foreground font-medium"
+                className="sticky left-0 z-20 border-b border-r bg-muted flex items-center justify-center text-xs text-muted-foreground font-medium"
                 style={{ gridColumn: 1, gridRow: `${rowStart} / span 2` }}
               >
                 {period}

@@ -112,9 +112,10 @@ export function TimeGrid({
         </ToggleGroup>
       </div>
 
-      <div className="border rounded-md overflow-hidden bg-card shadow-sm">
-        <div className="grid grid-cols-7 border-b bg-muted/50 text-sm font-medium">
-          <div className="p-2 text-center border-r">Tiết</div>
+      <div className="border rounded-md overflow-x-auto bg-card shadow-sm">
+        <div className="min-w-[500px]">
+          <div className="grid grid-cols-7 border-b bg-muted/50 text-sm font-medium sticky top-0 z-20">
+            <div className="p-2 text-center border-r sticky left-0 z-30 bg-muted/50">Tiết</div>
           {DAYS.map((day) => (
             <div key={day} className="p-2 text-center border-r last:border-r-0">
               Thứ {day}
@@ -125,7 +126,7 @@ export function TimeGrid({
         <div className="grid grid-cols-7">
           {PERIODS.map((period) => (
             <React.Fragment key={`period-${period}`}>
-              <div className="p-1 border-b border-r bg-muted/20 text-center text-xs font-medium flex items-center justify-center text-muted-foreground">
+              <div className="p-1 border-b border-r bg-muted/20 text-center text-xs font-medium flex items-center justify-center text-muted-foreground sticky left-0 z-10">
                 {period}
               </div>
               {DAYS.map((day, dayIdx) => {
@@ -153,6 +154,7 @@ export function TimeGrid({
               })}
             </React.Fragment>
           ))}
+        </div>
         </div>
       </div>
       <div className="flex gap-4 text-xs text-muted-foreground justify-end">

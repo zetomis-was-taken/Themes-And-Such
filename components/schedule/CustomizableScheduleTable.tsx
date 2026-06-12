@@ -126,10 +126,10 @@ export function CustomizableScheduleTable({
       >
         {/* Headers */}
         <div 
-          className="sticky top-0 left-0 z-10 flex items-center justify-center font-bold"
+          className="sticky top-0 left-0 z-30 flex items-center justify-center font-bold"
           style={{ 
             fontSize: `${fontSizeBase}px`,
-            backgroundColor: isDarkTheme ? `rgba(0,0,0,${tableBgOpacity})` : `rgba(255,255,255,${tableBgOpacity})`, 
+            backgroundColor: isDarkTheme ? `rgba(0,0,0,1)` : `rgba(255,255,255,1)`, 
             color: isDarkTheme ? "#fff" : "#000",
             borderBottom: borderStyleStr,
             borderRight: borderStyleStr
@@ -159,12 +159,12 @@ export function CustomizableScheduleTable({
           return (
             <React.Fragment key={`bg-row-${period}`}>
               <div
-                className="flex items-center justify-center font-semibold"
+                className="sticky left-0 z-20 flex items-center justify-center font-semibold"
                 style={{ 
                   fontSize: `${fontSizeBase - 2}px`,
                   gridColumn: 1, 
                   gridRow: `${rowStart} / span 2`,
-                  backgroundColor: isDarkTheme ? `rgba(0,0,0,${Math.max(0, tableBgOpacity - 0.2)})` : `rgba(255,255,255,${Math.max(0, tableBgOpacity - 0.3)})`,
+                  backgroundColor: isDarkTheme ? `rgba(0,0,0,1)` : `rgba(255,255,255,1)`,
                   color: isDarkTheme ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.5)",
                   borderBottom: borderStyleStr,
                   borderRight: borderStyleStr
