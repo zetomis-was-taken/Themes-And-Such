@@ -40,6 +40,7 @@ export function ClassRulesCard({ classData }: { classData: ClassGradeData }) {
             Tổng: {totalWeight}%
           </Badge>
           <Button
+            variant="secondary"
             size="sm"
             onClick={() => {
               setSelectedRule(null);

@@ -139,8 +139,7 @@ export default function LandingPage() {
             <Button
               asChild
               size="lg"
-              variant="outline"
-              className="rounded-full px-8 text-base bg-background/50 backdrop-blur-sm border-primary/30 hover:bg-primary/10"
+              className="rounded-full px-8 text-base shadow-lg shadow-secondary/20 transition-all bg-secondary hover:bg-secondary/80 text-secondary-foreground font-medium"
             >
               <Link href="/schedule">Thử xếp lịch</Link>
             </Button>

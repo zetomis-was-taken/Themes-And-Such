@@ -104,7 +104,7 @@ export function CourseRequestForm({ requests, onChange, availableCourseCodes }: 
                 ))}
               </div>
             )}
-            <Button type="button" onClick={handleAddRequest} disabled={!input.trim()} className="w-full">
+            <Button type="button" variant="secondary" onClick={handleAddRequest} disabled={!input.trim()} className="w-full font-medium">
               <Plus className="h-4 w-4 mr-2" /> Thêm Yêu Cầu
             </Button>
           </div>

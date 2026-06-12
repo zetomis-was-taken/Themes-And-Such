@@ -194,8 +194,9 @@ export default function SchedulePage() {
             </div>
 
             <Button
+              variant="secondary"
               size="lg"
-              className="w-full text-base h-14 font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="w-full text-base h-14 font-semibold shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all"
               onClick={handleGenerate}
               disabled={classes.length === 0 || requests.length === 0}
             >
