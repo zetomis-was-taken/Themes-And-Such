@@ -13,6 +13,10 @@ interface CustomizableScheduleTableProps {
   borderWidth: number;
   opacity: number;
   tableBgOpacity: number;
+  gridLineColor: string;
+  gridLineOpacity: number;
+  gridLineWidth: number;
+  gridLineStyle: string;
 }
 
 const DAYS = [2, 3, 4, 5, 6, 7];
@@ -87,7 +91,11 @@ export function CustomizableScheduleTable({
   borderRadius,
   borderWidth,
   opacity,
-  tableBgOpacity
+  tableBgOpacity,
+  gridLineColor,
+  gridLineOpacity,
+  gridLineWidth,
+  gridLineStyle
 }: CustomizableScheduleTableProps) {
   const isDarkTheme = palette === "dark";
   
@@ -102,6 +110,10 @@ export function CustomizableScheduleTable({
   } else {
     colors = PALETTES[palette as keyof typeof PALETTES] || PALETTES.pastel;
   }
+
+  const borderStyleStr = `${gridLineWidth}px ${gridLineStyle} ${hexToRgba(gridLineColor, gridLineOpacity)}`;
+  // Sub-class cells use the same border style
+  const borderSubStr = `${gridLineWidth}px ${gridLineStyle} ${hexToRgba(gridLineColor, gridLineOpacity)}`;
 
   return (
     <div className="w-full relative" style={{ fontFamily: fontFamily }}>
@@ -119,8 +131,8 @@ export function CustomizableScheduleTable({
             fontSize: `${fontSizeBase}px`,
             backgroundColor: isDarkTheme ? `rgba(0,0,0,${tableBgOpacity})` : `rgba(255,255,255,${tableBgOpacity})`, 
             color: isDarkTheme ? "#fff" : "#000",
-            borderBottom: isDarkTheme ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
-            borderRight: isDarkTheme ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)"
+            borderBottom: borderStyleStr,
+            borderRight: borderStyleStr
           }}
         >
           Tiết
@@ -133,8 +145,8 @@ export function CustomizableScheduleTable({
               fontSize: `${fontSizeBase}px`,
               backgroundColor: isDarkTheme ? `rgba(0,0,0,${tableBgOpacity})` : `rgba(255,255,255,${tableBgOpacity})`, 
               color: isDarkTheme ? "#fff" : "#000",
-              borderBottom: isDarkTheme ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
-              borderRight: isDarkTheme ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)"
+              borderBottom: borderStyleStr,
+              borderRight: borderStyleStr
             }}
           >
             Thứ {day}
@@ -154,8 +166,8 @@ export function CustomizableScheduleTable({
                   gridRow: `${rowStart} / span 2`,
                   backgroundColor: isDarkTheme ? `rgba(0,0,0,${Math.max(0, tableBgOpacity - 0.2)})` : `rgba(255,255,255,${Math.max(0, tableBgOpacity - 0.3)})`,
                   color: isDarkTheme ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.5)",
-                  borderBottom: isDarkTheme ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.05)",
-                  borderRight: isDarkTheme ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)"
+                  borderBottom: borderStyleStr,
+                  borderRight: borderStyleStr
                 }}
               >
                 {period}
@@ -166,8 +178,8 @@ export function CustomizableScheduleTable({
                   style={{
                     gridColumn: dayIdx + 2,
                     gridRow: `${rowStart} / span 2`,
-                    borderBottom: isDarkTheme ? "1px dashed rgba(255,255,255,0.1)" : "1px dashed rgba(0,0,0,0.1)",
-                    borderRight: isDarkTheme ? "1px dashed rgba(255,255,255,0.1)" : "1px dashed rgba(0,0,0,0.1)"
+                    borderBottom: borderSubStr,
+                    borderRight: borderSubStr
                   }}
                 />
               ))}

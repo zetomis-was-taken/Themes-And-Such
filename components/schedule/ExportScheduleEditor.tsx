@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { toPng } from "html-to-image";
 import { useDropzone } from "react-dropzone";
+import { ColorPicker } from "@/components/ui/color-picker";
 
 interface ExportScheduleEditorProps {
   initialSchedule: SelectedClass[];
@@ -78,6 +79,10 @@ export function ExportScheduleEditor({
   const [borderWidth, setBorderWidth] = useState(1);
   const [opacity, setOpacity] = useState(90); // Class block background opacity
   const [tableBgOpacity, setTableBgOpacity] = useState(0.8); // Grid cells background opacity
+  const [gridLineColor, setGridLineColor] = useState("#000000"); // Grid lines color
+  const [gridLineOpacity, setGridLineOpacity] = useState(10); // Grid lines opacity
+  const [gridLineWidth, setGridLineWidth] = useState(1);
+  const [gridLineStyle, setGridLineStyle] = useState("solid");
 
   const [isExporting, setIsExporting] = useState(false);
 
@@ -286,6 +291,39 @@ export function ExportScheduleEditor({
                     min={0} max={4} step={1} className="py-2"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label>Màu viền lưới</Label>
+                  <div>
+                    <ColorPicker color={gridLineColor} onChange={setGridLineColor} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Độ trong suốt viền lưới: {gridLineOpacity}%</Label>
+                  <Slider
+                    value={[gridLineOpacity]}
+                    onValueChange={(vals) => setGridLineOpacity(vals[0])}
+                    min={0} max={100} step={5} className="py-2"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Độ dày viền lưới: {gridLineWidth}px</Label>
+                  <Slider
+                    value={[gridLineWidth]}
+                    onValueChange={(vals) => setGridLineWidth(vals[0])}
+                    min={0} max={4} step={1} className="py-2"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Kiểu viền lưới</Label>
+                  <Select value={gridLineStyle} onValueChange={setGridLineStyle}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="solid">Nét liền (Solid)</SelectItem>
+                      <SelectItem value="dashed">Nét đứt (Dashed)</SelectItem>
+                      <SelectItem value="dotted">Chấm bi (Dotted)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="flex items-center justify-between pt-2">
                   <Label htmlFor="showRoom" className="cursor-pointer">Hiển thị phòng học</Label>
                   <Switch id="showRoom" checked={showRoom} onCheckedChange={setShowRoom} />
@@ -314,16 +352,14 @@ export function ExportScheduleEditor({
                 {palette === "custom" && (
                   <div className="space-y-2">
                     <Label>Phối màu môn học</Label>
-                    <div className="grid grid-cols-7 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       {customColors.map((color, idx) => (
-                        <div key={idx} className="relative aspect-square rounded overflow-hidden border shadow-sm">
-                          <input 
-                            type="color" 
-                            value={color} 
-                            onChange={(e) => updateCustomColor(idx, e.target.value)}
-                            className="absolute inset-[-10px] w-[200%] h-[200%] cursor-pointer"
-                          />
-                        </div>
+                        <ColorPicker 
+                          key={idx}
+                          color={color} 
+                          onChange={(val) => updateCustomColor(idx, val)}
+                          className="w-full"
+                        />
                       ))}
                     </div>
                   </div>
@@ -409,6 +445,10 @@ export function ExportScheduleEditor({
               borderWidth={borderWidth}
               opacity={opacity / 100}
               tableBgOpacity={tableBgOpacity}
+              gridLineColor={gridLineColor}
+              gridLineOpacity={gridLineOpacity / 100}
+              gridLineWidth={gridLineWidth}
+              gridLineStyle={gridLineStyle}
             />
 
             <div
