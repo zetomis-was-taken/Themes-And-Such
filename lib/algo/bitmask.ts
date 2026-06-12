@@ -1,5 +1,17 @@
 import { ScheduleTime } from "./types";
 
+export type SemesterHalf = "first" | "second" | "full";
+
+export const getCourseSemesterHalf = (courseCode: string): SemesterHalf => {
+  const firstHalf = ["BAA00004", "BAA00103", "BAA00101", "BAA00003"];
+  const secondHalf = ["BAA00102", "BAA00104"];
+  // Handle cases where courseCode might be empty or undefined safely
+  if (!courseCode) return "full";
+  if (firstHalf.some(code => courseCode.includes(code))) return "first";
+  if (secondHalf.some(code => courseCode.includes(code))) return "second";
+  return "full";
+};
+
 export type WeeklyBitmask = [number, number, number, number, number, number];
 
 export const createEmptyMask = (): WeeklyBitmask => [0, 0, 0, 0, 0, 0];
@@ -95,6 +107,100 @@ export const countBits = (n: number): number => {
   while (temp > 0) {
     count += temp & 1;
     temp >>= 1;
+  }
+  return count;
+};
+
+// --- SemesterBitmask utilities ---
+
+export type SemesterBitmask = {
+  firstHalf: WeeklyBitmask;
+  secondHalf: WeeklyBitmask;
+};
+
+export const createEmptySemesterMask = (): SemesterBitmask => ({
+  firstHalf: createEmptyMask(),
+  secondHalf: createEmptyMask(),
+});
+
+export const scheduleToSemesterMask = (
+  schedule: ScheduleTime,
+  courseCode: string
+): SemesterBitmask => {
+  const half = getCourseSemesterHalf(courseCode);
+  const mask = createEmptySemesterMask();
+  const weekly = scheduleToBitmask(schedule);
+  if (half === "first" || half === "full") {
+    mask.firstHalf = [...weekly] as WeeklyBitmask;
+  }
+  if (half === "second" || half === "full") {
+    mask.secondHalf = [...weekly] as WeeklyBitmask;
+  }
+  return mask;
+};
+
+export const schedulesToSemesterMask = (
+  schedules: ScheduleTime[],
+  half: SemesterHalf = "full"
+): SemesterBitmask => {
+  const mask = createEmptySemesterMask();
+  const weekly = schedulesToBitmask(schedules);
+  if (half === "first" || half === "full") {
+    mask.firstHalf = [...weekly] as WeeklyBitmask;
+  }
+  if (half === "second" || half === "full") {
+    mask.secondHalf = [...weekly] as WeeklyBitmask;
+  }
+  return mask;
+};
+
+export const checkSemesterCollision = (
+  maskA: SemesterBitmask,
+  maskB: SemesterBitmask
+): boolean => {
+  return (
+    checkCollision(maskA.firstHalf, maskB.firstHalf) ||
+    checkCollision(maskA.secondHalf, maskB.secondHalf)
+  );
+};
+
+export const mergeSemesterMasks = (
+  maskA: SemesterBitmask,
+  maskB: SemesterBitmask
+): SemesterBitmask => {
+  return {
+    firstHalf: mergeMasks(maskA.firstHalf, maskB.firstHalf),
+    secondHalf: mergeMasks(maskA.secondHalf, maskB.secondHalf),
+  };
+};
+
+export const countSemesterBits = (
+  mask: SemesterBitmask,
+  maskTemplate?: number
+): number => {
+  let count = 0;
+  for (let i = 0; i < 6; i++) {
+    // Merge bits from both halves to prevent double counting a full-semester class,
+    // and then apply template if provided.
+    let combinedDaily = mask.firstHalf[i] | mask.secondHalf[i];
+    if (maskTemplate !== undefined) {
+      combinedDaily &= maskTemplate;
+    }
+    count += countBits(combinedDaily);
+  }
+  return count;
+};
+
+export const countSemesterIntersectionBits = (
+  maskA: SemesterBitmask,
+  maskB: SemesterBitmask
+): number => {
+  let count = 0;
+  for (let i = 0; i < 6; i++) {
+    // Compute intersection per half, then union them to prevent double counting
+    const intersectFirst = maskA.firstHalf[i] & maskB.firstHalf[i];
+    const intersectSecond = maskA.secondHalf[i] & maskB.secondHalf[i];
+    count += countBits(intersectFirst | intersectSecond);
   }
   return count;
 };

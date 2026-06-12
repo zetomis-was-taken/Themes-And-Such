@@ -8,20 +8,21 @@ import {
   TimeConstraints,
 } from "./types";
 import {
-  checkCollision,
-  createEmptyMask,
-  mergeMasks,
-  schedulesToBitmask,
-  scheduleToBitmask,
-  WeeklyBitmask,
-  countBits,
+  checkSemesterCollision,
+  createEmptySemesterMask,
+  mergeSemesterMasks,
+  schedulesToSemesterMask,
+  scheduleToSemesterMask,
+  SemesterBitmask,
+  countSemesterBits,
+  countSemesterIntersectionBits,
   createDailyMask,
 } from "./bitmask";
 
 export class ScheduleGenerator {
   private params: GeneratorParams;
-  private forbiddenMask: WeeklyBitmask;
-  private preferredMask: WeeklyBitmask;
+  private forbiddenMask: SemesterBitmask;
+  private preferredMask: SemesterBitmask;
   private validClassesByCourseCode: Map<string, ClassData[]>;
   private results: GeneratedSchedule[];
   private maxResults: number;
@@ -31,11 +32,13 @@ export class ScheduleGenerator {
   constructor(params: GeneratorParams) {
     this.params = params;
     this.results = [];
-    this.forbiddenMask = schedulesToBitmask(
+    this.forbiddenMask = schedulesToSemesterMask(
       params.constraints.forbiddenTimes || [],
+      "full"
     );
-    this.preferredMask = schedulesToBitmask(
+    this.preferredMask = schedulesToSemesterMask(
       params.constraints.preferredTimes || [],
+      "full"
     );
     this.validClassesByCourseCode = new Map();
     this.maxResults = params.maxResults || 1000;
@@ -48,7 +51,7 @@ export class ScheduleGenerator {
 
   public generate(): GeneratedSchedule[] {
     this.preProcessClasses();
-    this.backtrack([], createEmptyMask(), 0, new Array(6).fill(0));
+    this.backtrack([], createEmptySemesterMask(), 0, new Array(6).fill(0));
     return this.results;
   }
 
@@ -63,7 +66,7 @@ export class ScheduleGenerator {
 
   private backtrack(
     currentSelection: SelectedClass[],
-    currentMask: WeeklyBitmask,
+    currentMask: SemesterBitmask,
     requestIndex: number,
     dailyDifficulties: number[],
   ) {
@@ -86,19 +89,19 @@ export class ScheduleGenerator {
       if (!possibleClasses || possibleClasses.length === 0) continue;
 
       for (const classData of possibleClasses) {
-        const classMask = scheduleToBitmask(classData.schedule);
+        const classMask = scheduleToSemesterMask(classData.schedule, classData.courseCode);
 
-        if (checkCollision(currentMask, classMask)) continue;
+        if (checkSemesterCollision(currentMask, classMask)) continue;
 
-        const maskWithMainClass = mergeMasks(currentMask, classMask);
+        const maskWithMainClass = mergeSemesterMasks(currentMask, classMask);
 
         if (classData.subClasses && classData.subClasses.length > 0) {
           for (const sub of classData.subClasses) {
-            const subMask = scheduleToBitmask(sub.schedule);
-            if (!checkCollision(maskWithMainClass, subMask)) {
+            const subMask = scheduleToSemesterMask(sub.schedule, classData.courseCode);
+            if (!checkSemesterCollision(maskWithMainClass, subMask)) {
               this.commitSelection(
                 currentSelection,
-                mergeMasks(maskWithMainClass, subMask),
+                mergeSemesterMasks(maskWithMainClass, subMask),
                 requestIndex,
                 dailyDifficulties,
                 currentRequest,
@@ -124,7 +127,7 @@ export class ScheduleGenerator {
 
   private commitSelection(
     currentSelection: SelectedClass[],
-    currentMask: WeeklyBitmask,
+    currentMask: SemesterBitmask,
     requestIndex: number,
     dailyDifficulties: number[],
     currentRequest: CourseRequest,
@@ -164,7 +167,7 @@ export class ScheduleGenerator {
 
   private createGeneratedSchedule(
     classes: SelectedClass[],
-    finalMask: WeeklyBitmask,
+    finalMask: SemesterBitmask,
     dailyDifficulties: number[],
   ): GeneratedSchedule {
     let leftmostScore = 0;
@@ -175,21 +178,25 @@ export class ScheduleGenerator {
     let afternoonScore = 0;
 
     for (let i = 0; i < 6; i++) {
-      const dailyMask = finalMask[i];
-      const bitCount = countBits(dailyMask);
+      // Create a dummy bitmask for just this day to pass to countSemesterBits
+      const dailyMask: SemesterBitmask = {
+        firstHalf: [0, 0, 0, 0, 0, 0],
+        secondHalf: [0, 0, 0, 0, 0, 0]
+      };
+      dailyMask.firstHalf[i] = finalMask.firstHalf[i];
+      dailyMask.secondHalf[i] = finalMask.secondHalf[i];
+
+      const bitCount = countSemesterBits(dailyMask);
 
       leftmostScore += bitCount * (6 - i);
       rightmostScore += bitCount * (i + 1);
-
-      const preferredDailyMask = this.preferredMask[i];
-      preferredScore += countBits(dailyMask & preferredDailyMask);
-      
-      const avoidDailyMask = this.forbiddenMask[i];
-      avoidScore += countBits(dailyMask & avoidDailyMask);
-
-      morningScore += countBits(dailyMask & this.morningMaskTemplate);
-      afternoonScore += countBits(dailyMask & this.afternoonMaskTemplate);
     }
+
+    preferredScore = countSemesterIntersectionBits(finalMask, this.preferredMask);
+    avoidScore = countSemesterIntersectionBits(finalMask, this.forbiddenMask);
+
+    morningScore = countSemesterBits(finalMask, this.morningMaskTemplate);
+    afternoonScore = countSemesterBits(finalMask, this.afternoonMaskTemplate);
 
     // Tránh học bị phạt nặng (ví dụ: -20 điểm cho mỗi bit vi phạm)
     const avoidPenalty = avoidScore * -20;

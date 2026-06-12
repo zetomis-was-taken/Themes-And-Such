@@ -1,5 +1,6 @@
 import React from "react";
 import { GeneratedSchedule } from "@/lib/algo/types";
+import { getCourseSemesterHalf, SemesterHalf } from "@/lib/algo/bitmask";
 
 interface ScheduleTableProps {
   schedule: GeneratedSchedule;
@@ -83,12 +84,19 @@ export function ScheduleTable({ schedule, onRemoveClass, onEditClass, editingInd
             : "";
           const main = selected.classData;
           const sub = selected.selectedSubClass;
+          const half = getCourseSemesterHalf(main.courseCode);
+          
+          const placementStyle = half === "first" 
+            ? "justify-self-start w-[48%]" 
+            : half === "second" 
+            ? "justify-self-end w-[48%]" 
+            : "w-auto stretch";
 
           return (
             <React.Fragment key={`class-${idx}`}>
               {/* Main Class */}
               <div
-                className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5 z-20 relative ${colorClass} ${blockStyle}`}
+                className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5 z-20 relative ${colorClass} ${blockStyle} ${placementStyle}`}
                 style={{
                   gridColumn: main.schedule.dayOfWeek - 2 + 2,
                   gridRowStart: (main.schedule.startPeriod - 1) * 2 + 2,
@@ -115,6 +123,11 @@ export function ScheduleTable({ schedule, onRemoveClass, onEditClass, editingInd
                     </button>
                   )}
                 </div>
+                {half !== "full" && (
+                  <div className="text-[10px] font-bold uppercase opacity-80 mb-0.5">
+                    {half === "first" ? "Nửa đầu" : "Nửa sau"}
+                  </div>
+                )}
                 <div className="font-bold line-clamp-2 pr-10">{main.courseName}</div>
                 <div className="font-medium opacity-90">{main.className}</div>
                 <div className="mt-auto flex justify-between items-end text-[10px] opacity-80">
@@ -126,7 +139,7 @@ export function ScheduleTable({ schedule, onRemoveClass, onEditClass, editingInd
               {/* Sub Class if any */}
               {sub && (
                 <div
-                  className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5 z-20 relative ${colorClass} ${blockStyle}`}
+                  className={`m-1 p-2 rounded-md border text-xs shadow-sm flex flex-col gap-1 overflow-hidden transition-all hover:shadow-md hover:-translate-y-0.5 z-20 relative ${colorClass} ${blockStyle} ${placementStyle}`}
                   style={{
                     gridColumn: sub.schedule.dayOfWeek - 2 + 2,
                     gridRowStart: (sub.schedule.startPeriod - 1) * 2 + 2,
@@ -155,6 +168,11 @@ export function ScheduleTable({ schedule, onRemoveClass, onEditClass, editingInd
                       </button>
                     )}
                   </div>
+                  {half !== "full" && (
+                    <div className="text-[10px] font-bold uppercase opacity-80 mb-0.5">
+                      {half === "first" ? "Nửa đầu" : "Nửa sau"}
+                    </div>
+                  )}
                   <div className="font-bold line-clamp-1 pr-10">
                     {main.courseName}{" "}
                     <span className="opacity-75 font-normal">

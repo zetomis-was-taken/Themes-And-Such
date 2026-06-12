@@ -8,6 +8,7 @@ import {
   ScheduleTime,
   SubClassData,
 } from "@/lib/algo/types";
+import { getCourseSemesterHalf } from "@/lib/algo/bitmask";
 import { ScheduleTable } from "./ScheduleTable";
 import { ClassDataDropzone } from "./ClassDataDropzone";
 import { UploadedClassesTable } from "./UploadedClassesTable";
@@ -90,6 +91,8 @@ export function OfficialScheduleEditor({
       timesToCheck.push(newClass.selectedSubClass.schedule);
     }
 
+    const half1 = getCourseSemesterHalf(newClass.classData.courseCode);
+
     for (let i = 0; i < currentSchedule.length; i++) {
       if (
         ignoreIndex !== undefined &&
@@ -99,6 +102,13 @@ export function OfficialScheduleEditor({
         continue;
 
       const existing = currentSchedule[i];
+      const half2 = getCourseSemesterHalf(existing.classData.courseCode);
+      
+      // If both classes are half-semester but in different halves, they do not conflict
+      if (half1 !== "full" && half2 !== "full" && half1 !== half2) {
+        continue;
+      }
+
       const existingTimes: ScheduleTime[] = [existing.classData.schedule];
       if (existing.selectedSubClass) {
         existingTimes.push(existing.selectedSubClass.schedule);
