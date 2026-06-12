@@ -91,14 +91,14 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-background">
       {/* Background Gradients */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-teal-500/20 dark:bg-teal-600/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500/20 dark:bg-emerald-600/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-amber-500/20 dark:bg-amber-600/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
 
       {/* Header */}
       <header className="container mx-auto px-4 py-6 flex justify-between items-center z-10">
         <div className="flex items-center gap-2">
           {/* <Sparkles className="w-6 h-6 text-teal-600 dark:text-teal-400" /> */}
-          <span className="font-bold text-xl tracking-tight text-teal-600 dark:text-teal-400">
+          <span className="font-bold text-xl tracking-tight text-primary">
             Portal Helper
           </span>
         </div>
@@ -118,7 +118,7 @@ export default function LandingPage() {
         <div className="text-center max-w-3xl space-y-6 mb-16">
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]">
             Xếp Lịch Học <br className="hidden sm:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-amber-500 dark:to-amber-400">
               Thông Minh Hơn Bao Giờ Hết
             </span>
           </h1>
@@ -130,7 +130,7 @@ export default function LandingPage() {
             <Button
               asChild
               size="lg"
-              className="rounded-full px-8 gap-2 text-base shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 transition-all bg-teal-600 hover:bg-teal-700 text-white"
+              className="rounded-full px-8 gap-2 text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               <Link href="/dashboard">
                 Vào Dashboard <ArrowRight className="w-4 h-4" />
@@ -140,7 +140,7 @@ export default function LandingPage() {
               asChild
               size="lg"
               variant="outline"
-              className="rounded-full px-8 text-base bg-background/50 backdrop-blur-sm border-teal-500/30 hover:bg-teal-500/10"
+              className="rounded-full px-8 text-base bg-background/50 backdrop-blur-sm border-primary/30 hover:bg-primary/10"
             >
               <Link href="/schedule">Thử xếp lịch</Link>
             </Button>

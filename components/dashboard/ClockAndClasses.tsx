@@ -101,7 +101,7 @@ export function ClockAndClasses({ allClasses }: { allClasses: ClassItem[] }) {
                   key={idx} 
                   className={`p-4 border border-border rounded-lg transition-all ${
                     isActive 
-                      ? "bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-700 shadow-md ring-1 ring-blue-400 dark:ring-blue-700" 
+                      ? "bg-primary/5 dark:bg-primary/20 border-primary shadow-md ring-1 ring-primary" 
                       : isPast 
                         ? "bg-muted/30 opacity-70" 
                         : "bg-card hover:shadow-sm"
@@ -110,7 +110,7 @@ export function ClockAndClasses({ allClasses }: { allClasses: ClassItem[] }) {
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex gap-2 items-center">
                       <span className="font-semibold text-lg">{startTimeStr} - {endTimeStr}</span>
-                      {isActive && <Badge variant="default" className="bg-blue-600">Đang diễn ra</Badge>}
+                      {isActive && <Badge variant="default" className="bg-primary text-primary-foreground">Đang diễn ra</Badge>}
                       {isPast && <Badge variant="secondary">Đã kết thúc</Badge>}
                     </div>
                     <Badge variant="outline">{cls.type}</Badge>

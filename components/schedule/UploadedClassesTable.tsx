@@ -104,7 +104,7 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
                             Thứ <span className="text-amber-600 dark:text-amber-500 font-bold">{c.schedule.dayOfWeek}</span>
                           </span>
                           <span className="text-muted-foreground">
-                            Tiết <span className="text-blue-600 dark:text-blue-400 font-bold">{c.schedule.startPeriod}-{c.schedule.endPeriod}</span>
+                            Tiết <span className="text-primary font-bold">{c.schedule.startPeriod}-{c.schedule.endPeriod}</span>
                           </span>
                           {c.schedule.room && (
                             <span className="text-xs opacity-70">P.{c.schedule.room}</span>
@@ -121,7 +121,7 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
                                 </span>
                                 <div className="flex justify-between items-center gap-4">
                                   <span className="whitespace-nowrap">Thứ <span className="text-amber-600 dark:text-amber-500 font-bold">{sc.schedule.dayOfWeek}</span></span>
-                                  <span className="whitespace-nowrap">Tiết <span className="text-blue-600 dark:text-blue-400 font-bold">{sc.schedule.startPeriod}-{sc.schedule.endPeriod}</span></span>
+                                  <span className="whitespace-nowrap">Tiết <span className="text-primary font-bold">{sc.schedule.startPeriod}-{sc.schedule.endPeriod}</span></span>
                                 </div>
                                 {sc.schedule.room && (
                                   <div className="text-xs opacity-70 mt-0.5">P.{sc.schedule.room}</div>

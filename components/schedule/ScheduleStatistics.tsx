@@ -163,7 +163,7 @@ export function ScheduleStatistics({ schedules }: ScheduleStatisticsProps) {
               <CardTitle className="text-xs text-muted-foreground uppercase font-semibold">Điểm trung bình</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{avgScore.toFixed(1)}</div>
+              <div className="text-3xl font-bold text-primary">{avgScore.toFixed(1)}</div>
             </CardContent>
           </Card>
           <Card className="bg-gradient-to-br from-card to-muted/50">

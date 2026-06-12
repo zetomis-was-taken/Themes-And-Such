@@ -17,9 +17,9 @@ export function RulesTab({ classesData }: { classesData: ClassGradeData[] }) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-lg p-4 mb-6">
-        <h3 className="text-blue-800 dark:text-blue-300 font-medium mb-1">Hướng dẫn thiết lập</h3>
-        <ul className="text-sm text-blue-700 dark:text-blue-400 list-disc list-inside space-y-1">
+      <div className="bg-info/10 border border-info/30 rounded-lg p-4 mb-6">
+        <h3 className="text-info font-medium mb-1">Hướng dẫn thiết lập</h3>
+        <ul className="text-sm text-info/80 list-disc list-inside space-y-1">
           <li>Bạn cần thêm các cột điểm tương ứng với Đề cương chi tiết của môn học.</li>
           <li>Tổng trọng số của các cột điểm trong một môn nên là 100%.</li>
           <li>Có 2 loại điểm: <strong>Nhập số</strong> (thang điểm 10) và <strong>Cộng dồn</strong> (tăng giảm trực tiếp).</li>

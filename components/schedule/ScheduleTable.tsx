@@ -13,14 +13,14 @@ const DAYS = [2, 3, 4, 5, 6, 7];
 const PERIODS = Array.from({ length: 10 }, (_, i) => i + 1);
 
 const COLORS = [
-  "bg-blue-100 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300",
-  "bg-emerald-100 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300",
-  "bg-violet-100 dark:bg-violet-900/30 border-violet-200 dark:border-violet-800 text-violet-800 dark:text-violet-300",
-  "bg-amber-100 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300",
-  "bg-pink-100 dark:bg-pink-900/30 border-pink-200 dark:border-pink-800 text-pink-800 dark:text-pink-300",
-  "bg-cyan-100 dark:bg-cyan-900/30 border-cyan-200 dark:border-cyan-800 text-cyan-800 dark:text-cyan-300",
-  "bg-rose-100 dark:bg-rose-900/30 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300",
-  "bg-indigo-100 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-800 text-indigo-800 dark:text-indigo-300",
+  "bg-teal-500/10 text-teal-800 dark:text-teal-300 border-teal-500/20 dark:border-teal-500/30",
+  "bg-cyan-500/10 text-cyan-800 dark:text-cyan-300 border-cyan-500/20 dark:border-cyan-500/30",
+  "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/20 dark:border-emerald-500/30",
+  "bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-500/20 dark:border-amber-500/30",
+  "bg-sky-500/10 text-sky-800 dark:text-sky-300 border-sky-500/20 dark:border-sky-500/30",
+  "bg-indigo-500/10 text-indigo-800 dark:text-indigo-300 border-indigo-500/20 dark:border-indigo-500/30",
+  "bg-rose-500/10 text-rose-800 dark:text-rose-300 border-rose-500/20 dark:border-rose-500/30",
+  "bg-purple-500/10 text-purple-800 dark:text-purple-300 border-purple-500/20 dark:border-purple-500/30",
 ];
 
 import { X, Edit2 } from "lucide-react";

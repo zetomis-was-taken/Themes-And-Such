@@ -154,7 +154,7 @@ export function RuleFormDialog({
                   value="INPUT"
                   disabled={!!initialData}
                   {...form.register("ruleType")}
-                  className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  className="w-4 h-4 text-primary focus:ring-primary border-border"
                 />
                 <span className="text-sm">Nhập số (0-10)</span>
               </label>
@@ -164,7 +164,7 @@ export function RuleFormDialog({
                   value="ACCUMULATE"
                   disabled={!!initialData}
                   {...form.register("ruleType")}
-                  className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  className="w-4 h-4 text-primary focus:ring-primary border-border"
                 />
                 <span className="text-sm">Cộng dồn (+/-)</span>
               </label>
@@ -191,7 +191,7 @@ export function RuleFormDialog({
               type="checkbox"
               id="isQuickInput"
               {...form.register("isQuickInput")}
-              className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300"
+              className="w-4 h-4 rounded text-primary focus:ring-primary border-border"
             />
             <Label htmlFor="isQuickInput" className="cursor-pointer font-normal">
               Có thể nhập nhanh (Hiển thị ở Dashboard)
