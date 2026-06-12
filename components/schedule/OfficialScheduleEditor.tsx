@@ -43,7 +43,6 @@ export function OfficialScheduleEditor({
   const [selectedClassId, setSelectedClassId] = useState<string>("");
   const [selectedSubClassGroup, setSelectedSubClassGroup] =
     useState<string>("");
-  const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("json");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
@@ -162,8 +161,14 @@ export function OfficialScheduleEditor({
       return;
     }
 
-    setMySchedule([...mySchedule, newClass]);
-    toast.success("Đã thêm lớp học vào lịch");
+    const newSchedule = [...mySchedule, newClass];
+    setMySchedule(newSchedule);
+    
+    toast.promise(saveOfficialSchedule(newSchedule), {
+      loading: "Đang lưu...",
+      success: "Đã thêm lớp học vào lịch",
+      error: "Lỗi khi lưu lịch",
+    });
 
     setSelectedClassId("");
     setSelectedSubClassGroup("");
@@ -211,11 +216,23 @@ export function OfficialScheduleEditor({
       const updated = [...mySchedule];
       updated[editingIndex] = newClass;
       setMySchedule(updated);
-      toast.success("Đã cập nhật lớp học thành công");
+      
+      toast.promise(saveOfficialSchedule(updated), {
+        loading: "Đang cập nhật...",
+        success: "Đã cập nhật lớp học thành công",
+        error: "Lỗi khi cập nhật lịch",
+      });
+      
       setEditingIndex(null);
     } else {
-      setMySchedule([...mySchedule, newClass]);
-      toast.success("Đã thêm lớp học thủ công vào lịch");
+      const updated = [...mySchedule, newClass];
+      setMySchedule(updated);
+      
+      toast.promise(saveOfficialSchedule(updated), {
+        loading: "Đang thêm...",
+        success: "Đã thêm lớp học thủ công vào lịch",
+        error: "Lỗi khi lưu lịch",
+      });
     }
     reset();
   };
@@ -262,20 +279,17 @@ export function OfficialScheduleEditor({
     } else if (editingIndex !== null && editingIndex > index) {
       setEditingIndex(editingIndex - 1);
     }
-    setMySchedule((prev) => prev.filter((_, i) => i !== index));
+    const updated = mySchedule.filter((_, i) => i !== index);
+    setMySchedule(updated);
+    
+    toast.promise(saveOfficialSchedule(updated), {
+      loading: "Đang xóa...",
+      success: "Đã xóa lớp học",
+      error: "Lỗi khi xóa lớp",
+    });
   };
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      await saveOfficialSchedule(mySchedule);
-      toast.success("Đã lưu lịch chính thức thành công!");
-    } catch (err: any) {
-      toast.error(err.message || "Lỗi khi lưu lịch");
-    } finally {
-      setIsSaving(false);
-    }
-  };
+
 
   const pseudoSchedule: GeneratedSchedule = {
     classes: mySchedule,
@@ -636,19 +650,6 @@ export function OfficialScheduleEditor({
               {mySchedule.length} môn học
             </p>
           </div>
-          <Button
-            variant="secondary"
-            onClick={handleSave}
-            disabled={isSaving || mySchedule.length === 0}
-            className="shadow-sm hover:shadow-md transition-all font-semibold"
-          >
-            {isSaving ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Save className="w-4 h-4 mr-2" />
-            )}
-            Lưu làm lịch chính thức
-          </Button>
         </div>
 
         {mySchedule.length > 0 ? (

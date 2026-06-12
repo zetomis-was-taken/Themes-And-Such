@@ -106,13 +106,11 @@ export async function saveOfficialSchedule(selectedClasses: SelectedClass[]) {
 
   const userId = session.userId;
 
-  // Xóa toàn bộ userClasses cũ và các rule đã tạo
-  await db.delete(userClasses).where(eq(userClasses.userId, userId));
-  await db.delete(classRules).where(eq(classRules.userId, userId));
-
+  const incomingIds: { classId: number; subClassId: number | null }[] = [];
+  
   for (const selected of selectedClasses) {
     const classId = await getOrCreateClass(selected.classData);
-    let subClassId: number | undefined;
+    let subClassId: number | null = null;
 
     if (selected.selectedSubClass) {
       subClassId = await getOrCreateSubClass(
@@ -120,11 +118,53 @@ export async function saveOfficialSchedule(selectedClasses: SelectedClass[]) {
         selected.selectedSubClass,
       );
     }
+    incomingIds.push({ classId, subClassId });
+  }
 
+  const existingClasses = await db.query.userClasses.findMany({
+    where: eq(userClasses.userId, userId),
+  });
+
+  const toDelete = existingClasses.filter((existing) => {
+    return !incomingIds.some(
+      (incoming) =>
+        incoming.classId === existing.classId &&
+        (incoming.subClassId === existing.subClassId || 
+        (incoming.subClassId === null && existing.subClassId === null))
+    );
+  });
+
+  for (const del of toDelete) {
+    await db.delete(userClasses).where(eq(userClasses.id, del.id));
+
+    // Only delete rules if the entire class (all its subclasses) is removed
+    const stillHasIncomingForClass = incomingIds.some(
+      (c) => c.classId === del.classId
+    );
+    if (!stillHasIncomingForClass) {
+      await db.delete(classRules).where(
+        and(
+          eq(classRules.userId, userId),
+          eq(classRules.classId, del.classId)
+        )
+      );
+    }
+  }
+
+  const toInsert = incomingIds.filter((incoming) => {
+    return !existingClasses.some(
+      (existing) =>
+        existing.classId === incoming.classId &&
+        (existing.subClassId === incoming.subClassId || 
+        (incoming.subClassId === null && existing.subClassId === null))
+    );
+  });
+
+  for (const ins of toInsert) {
     await db.insert(userClasses).values({
       userId,
-      classId,
-      subClassId,
+      classId: ins.classId,
+      subClassId: ins.subClassId ?? undefined,
     });
   }
 
