@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { ScheduleTable } from "@/components/schedule/ScheduleTable";
@@ -91,14 +94,14 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-background">
       {/* Background Gradients */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-teal-500/20 dark:bg-teal-600/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500/20 dark:bg-emerald-600/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-amber-500/20 dark:bg-amber-600/20 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
 
       {/* Header */}
       <header className="container mx-auto px-4 py-6 flex justify-between items-center z-10">
         <div className="flex items-center gap-2">
           {/* <Sparkles className="w-6 h-6 text-teal-600 dark:text-teal-400" /> */}
-          <span className="font-bold text-xl tracking-tight text-teal-600 dark:text-teal-400">
+          <span className="font-bold text-xl tracking-tight text-primary">
             Portal Helper
           </span>
         </div>
@@ -115,22 +118,42 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main className="flex-1 container mx-auto px-4 flex flex-col items-center justify-center pt-12 pb-24 z-10">
-        <div className="text-center max-w-3xl space-y-6 mb-16">
-          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center max-w-3xl space-y-6 mb-16"
+        >
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]"
+          >
             Xếp Lịch Học <br className="hidden sm:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-amber-500 dark:to-amber-400">
               Thông Minh Hơn Bao Giờ Hết
             </span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-lg md:text-xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed"
+          >
             Portal Helper giúp bạn tự động hóa việc xếp lịch, theo dõi điểm số,
             và lên kế hoạch học tập hoàn hảo chỉ với vài cú click chuột.
-          </p>
-          <div className="flex justify-center gap-4 pt-4">
+          </motion.p>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex justify-center gap-4 pt-4"
+          >
             <Button
               asChild
               size="lg"
-              className="rounded-full px-8 gap-2 text-base shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 transition-all bg-teal-600 hover:bg-teal-700 text-white"
+              className="rounded-full px-8 gap-2 text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               <Link href="/dashboard">
                 Vào Dashboard <ArrowRight className="w-4 h-4" />
@@ -139,16 +162,20 @@ export default function LandingPage() {
             <Button
               asChild
               size="lg"
-              variant="outline"
-              className="rounded-full px-8 text-base bg-background/50 backdrop-blur-sm border-teal-500/30 hover:bg-teal-500/10"
+              className="rounded-full px-8 text-base shadow-lg shadow-secondary/20 transition-all bg-secondary hover:bg-secondary/80 text-secondary-foreground font-medium"
             >
               <Link href="/schedule">Thử xếp lịch</Link>
             </Button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Schedule Preview Section */}
-        <div className="w-full max-w-5xl rounded-xl border bg-card/80 backdrop-blur-xl shadow-2xl overflow-hidden">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95, y: 30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ type: "spring", bounce: 0.4, duration: 0.8, delay: 0.4 }}
+          className="w-full max-w-5xl rounded-xl border bg-card/80 backdrop-blur-xl shadow-2xl overflow-hidden"
+        >
           <div className="border-b bg-muted/50 px-4 py-3 flex items-center justify-between">
             <div className="flex gap-2">
               <div className="w-3 h-3 rounded-full bg-red-500/80" />
@@ -167,7 +194,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </main>
 
       {/* Footer */}

@@ -50,25 +50,25 @@ export function GPASummary({ classesData }: { classesData: ClassGradeData[] }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md border-0">
+      <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-md border-0">
         <CardContent className="p-6 flex items-center gap-4">
           <div className="p-3 bg-white/20 rounded-xl">
             <GraduationCap className="w-8 h-8 text-white" />
           </div>
           <div>
-            <p className="text-blue-100 font-medium">GPA Hệ 10</p>
+            <p className="text-primary-foreground/80 font-medium">GPA Hệ 10</p>
             <h2 className="text-3xl font-bold">{gpa10.toFixed(2)}</h2>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-md border-0">
+      <Card className="bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-md border-0">
         <CardContent className="p-6 flex items-center gap-4">
           <div className="p-3 bg-white/20 rounded-xl">
             <Award className="w-8 h-8 text-white" />
           </div>
           <div>
-            <p className="text-indigo-100 font-medium">GPA Hệ 4</p>
+            <p className="text-teal-50 font-medium">GPA Hệ 4</p>
             <h2 className="text-3xl font-bold">{gpa4.toFixed(2)}</h2>
           </div>
         </CardContent>
@@ -76,7 +76,7 @@ export function GPASummary({ classesData }: { classesData: ClassGradeData[] }) {
 
       <Card className="bg-card border border-border shadow-sm">
         <CardContent className="p-6 flex items-center gap-4">
-          <div className="p-3 bg-blue-50/50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
+          <div className="p-3 bg-primary/10 text-primary rounded-xl">
             <BookOpen className="w-8 h-8" />
           </div>
           <div>

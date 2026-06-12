@@ -33,13 +33,14 @@ export function ClassRulesCard({ classData }: { classData: ClassGradeData }) {
             variant={totalWeight === 100 ? "default" : "secondary"}
             className={
               totalWeight === 100
-                ? "bg-green-100 text-green-700 hover:bg-green-100 border-transparent dark:bg-green-900/30 dark:text-green-400"
-                : "bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-transparent dark:bg-yellow-900/30 dark:text-yellow-400"
+                ? "bg-success/20 text-success-foreground hover:bg-success/30 border-transparent dark:bg-success/20 dark:text-success"
+                : "bg-warning/20 text-warning-foreground hover:bg-warning/30 border-transparent dark:bg-warning/20 dark:text-warning"
             }
           >
             Tổng: {totalWeight}%
           </Badge>
           <Button
+            variant="secondary"
             size="sm"
             onClick={() => {
               setSelectedRule(null);
@@ -79,7 +80,7 @@ export function ClassRulesCard({ classData }: { classData: ClassGradeData }) {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-semibold text-blue-600 dark:text-blue-400">
+                  <span className="font-semibold text-primary">
                     {rule.weightPercent}%
                   </span>
                   <Settings2 className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />

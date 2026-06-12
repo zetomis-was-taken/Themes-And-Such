@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X, Trash2, Edit2 } from "lucide-react";
+import { Plus, Trash2, Pencil } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
@@ -104,7 +104,7 @@ export function CourseRequestForm({ requests, onChange, availableCourseCodes }: 
                 ))}
               </div>
             )}
-            <Button type="button" onClick={handleAddRequest} disabled={!input.trim()} className="w-full">
+            <Button type="button" variant="secondary" onClick={handleAddRequest} disabled={!input.trim()} className="w-full font-medium">
               <Plus className="h-4 w-4 mr-2" /> Thêm Yêu Cầu
             </Button>
           </div>
@@ -154,14 +154,14 @@ export function CourseRequestForm({ requests, onChange, availableCourseCodes }: 
                             <span className="text-xs font-semibold mr-1 flex items-center text-muted-foreground">Nhóm:</span>
                           )}
                           {req.courseCodes.map(code => (
-                            <Badge key={code} variant="outline" className="bg-blue-50/50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-900/50">
+                            <Badge key={code} variant="outline" className="bg-primary/10 text-primary border-primary/20">
                               {code}
                             </Badge>
                           ))}
                         </div>
                         <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/50" onClick={() => editRequest(req.originalIndex)}>
-                            <Edit2 className="h-4 w-4" />
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10" onClick={() => editRequest(req.originalIndex)}>
+                            <Pencil className="w-4 h-4" />
                           </Button>
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => removeRequest(req.originalIndex)}>
                             <Trash2 className="h-4 w-4" />

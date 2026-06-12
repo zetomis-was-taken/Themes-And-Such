@@ -48,7 +48,7 @@ export function AppSidebar() {
       <SidebarHeader className="p-4 border-b">
         <Link
           href="/"
-          className="font-bold text-xl tracking-tight text-blue-600 dark:text-blue-400 hover:opacity-80 transition-opacity"
+          className="font-bold text-xl tracking-tight text-primary hover:opacity-80 transition-opacity"
         >
           Portal Helper
         </Link>

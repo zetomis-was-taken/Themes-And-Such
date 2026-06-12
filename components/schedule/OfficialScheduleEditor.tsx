@@ -637,6 +637,7 @@ export function OfficialScheduleEditor({
             </p>
           </div>
           <Button
+            variant="secondary"
             onClick={handleSave}
             disabled={isSaving || mySchedule.length === 0}
             className="shadow-sm hover:shadow-md transition-all font-semibold"

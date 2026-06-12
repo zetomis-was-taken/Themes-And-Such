@@ -156,7 +156,7 @@ export function ScheduleViewer({ schedules, onBack }: ScheduleViewerProps) {
           <div className="space-y-1">
             <div className="text-xs text-muted-foreground uppercase font-medium">Cân bằng độ khó</div>
             <div className="flex flex-col gap-1 mt-2 h-full justify-center">
-              <div className="text-center bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded p-2 border border-blue-100 dark:border-blue-800">
+              <div className="text-center bg-primary/10 text-primary rounded p-2 border border-primary/20">
                 <div className="text-2xl font-bold">{scores.balanceScore}</div>
                 <div className="text-[10px] uppercase tracking-wider opacity-70">Điểm cân bằng</div>
               </div>

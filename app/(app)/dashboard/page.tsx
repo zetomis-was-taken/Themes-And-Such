@@ -15,6 +15,7 @@ import { ClockAndClasses } from "@/components/dashboard/ClockAndClasses";
 import { HistoryCalendar } from "@/components/dashboard/HistoryCalendar";
 import { QuickGradesCard } from "@/components/dashboard/QuickGradesCard";
 import { getUserClassesWithGrades } from "@/lib/grades/queries";
+import { MotionWrapper } from "@/components/MotionWrapper";
 
 async function getTodaysClasses() {
   const session = await getSession();
@@ -113,19 +114,27 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8">
         <div className="space-y-8">
-          <ClockAndClasses allClasses={allUserClasses} />
-          <QuickGradesCard classesWithGrades={classesWithGrades} />
+          <MotionWrapper delay={0.1}>
+            <ClockAndClasses allClasses={allUserClasses} />
+          </MotionWrapper>
+          <MotionWrapper delay={0.2}>
+            <QuickGradesCard classesWithGrades={classesWithGrades} />
+          </MotionWrapper>
         </div>
 
         <div className="space-y-8">
-          <MarkdownNote
-            initialContent={initialNote}
-            targetDate={targetDateStr}
-          />
-          <HistoryCalendar
-            notesDates={notesDates}
-            allClasses={allUserClasses}
-          />
+          <MotionWrapper delay={0.3}>
+            <MarkdownNote
+              initialContent={initialNote}
+              targetDate={targetDateStr}
+            />
+          </MotionWrapper>
+          <MotionWrapper delay={0.4}>
+            <HistoryCalendar
+              notesDates={notesDates}
+              allClasses={allUserClasses}
+            />
+          </MotionWrapper>
         </div>
       </div>
     </div>

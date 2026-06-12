@@ -3,6 +3,7 @@
 import { ClassGradeData } from "@/lib/grades/queries";
 import { GPASummary } from "./GPASummary";
 import { ClassGradesCard } from "./ClassGradesCard";
+import { motion } from "framer-motion";
 
 export function GradesTab({ classesData }: { classesData: ClassGradeData[] }) {
   if (classesData.length === 0) {
@@ -21,8 +22,15 @@ export function GradesTab({ classesData }: { classesData: ClassGradeData[] }) {
       <GPASummary classesData={classesData} />
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        {classesData.map((cls) => (
-          <ClassGradesCard key={cls.classId} classData={cls} />
+        {classesData.map((cls, idx) => (
+          <motion.div 
+            key={cls.classId}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: idx * 0.1 }}
+          >
+            <ClassGradesCard classData={cls} />
+          </motion.div>
         ))}
       </div>
     </div>

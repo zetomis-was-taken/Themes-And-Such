@@ -161,7 +161,7 @@ export function HistoryCalendar({
                 {day}
                 {hasNote && (
                   <div
-                    className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${isToday ? "bg-gray-400" : "bg-blue-500"}`}
+                    className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${isToday ? "bg-gray-400" : "bg-primary"}`}
                   />
                 )}
               </button>
