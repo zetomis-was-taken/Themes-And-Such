@@ -16,18 +16,18 @@ interface ClassItem {
 }
 
 const PERIOD_TIMES = [
-  { start: "07:00", end: "07:50" }, // 1
-  { start: "08:00", end: "08:50" }, // 2
-  { start: "09:00", end: "09:50" }, // 3
-  { start: "10:00", end: "10:50" }, // 4
+  { start: "07:30", end: "08:20" }, // 1
+  { start: "08:20", end: "09:10" }, // 2
+  { start: "09:10", end: "10:00" }, // 3
+  { start: "10:10", end: "11:00" }, // 4
   { start: "11:00", end: "11:50" }, // 5
-  { start: "13:00", end: "13:50" }, // 6
-  { start: "14:00", end: "14:50" }, // 7
-  { start: "15:00", end: "15:50" }, // 8
-  { start: "16:00", end: "16:50" }, // 9
-  { start: "17:00", end: "17:50" }, // 10
-  { start: "18:00", end: "18:50" }, // 11
-  { start: "19:00", end: "19:50" }, // 12
+  { start: "12:40", end: "13:30" }, // 6
+  { start: "13:30", end: "14:20" }, // 7
+  { start: "14:20", end: "15:10" }, // 8
+  { start: "15:20", end: "16:10" }, // 9
+  { start: "16:10", end: "17:00" }, // 10
+  { start: "17:10", end: "18:00" }, // 11
+  { start: "18:00", end: "18:50" }, // 12
 ];
 
 function timeToMinutes(timeStr: string) {
