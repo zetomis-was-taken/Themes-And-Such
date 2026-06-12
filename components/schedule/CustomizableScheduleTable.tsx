@@ -3,11 +3,16 @@ import { GeneratedSchedule } from "@/lib/algo/types";
 
 interface CustomizableScheduleTableProps {
   schedule: GeneratedSchedule;
-  palette: "pastel" | "vibrant" | "monochrome" | "dark";
+  palette: "pastel" | "vibrant" | "monochrome" | "dark" | "custom";
+  customColors?: string[];
+  fontFamily: string;
+  fontSizeBase: number;
   showRoom: boolean;
   showCode: boolean;
-  roundedCorners: boolean;
+  borderRadius: number;
+  borderWidth: number;
   opacity: number;
+  tableBgOpacity: number;
 }
 
 const DAYS = [2, 3, 4, 5, 6, 7];
@@ -54,27 +59,54 @@ const PALETTES = {
 
 // Convert hex to rgba for opacity
 function hexToRgba(hex: string, alpha: number) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
+  if (!hex || !hex.startsWith('#')) return `rgba(255, 255, 255, ${alpha})`;
+  const r = parseInt(hex.slice(1, 3), 16) || 0;
+  const g = parseInt(hex.slice(3, 5), 16) || 0;
+  const b = parseInt(hex.slice(5, 7), 16) || 0;
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+// Get contrasting text color (black or white)
+function getContrastYIQ(hexcolor: string) {
+  if (!hexcolor || !hexcolor.startsWith('#')) return '#000000';
+  const r = parseInt(hexcolor.slice(1, 3), 16) || 0;
+  const g = parseInt(hexcolor.slice(3, 5), 16) || 0;
+  const b = parseInt(hexcolor.slice(5, 7), 16) || 0;
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  return yiq >= 128 ? '#000000' : '#ffffff';
 }
 
 export function CustomizableScheduleTable({ 
   schedule, 
-  palette, 
+  palette,
+  customColors = [],
+  fontFamily,
+  fontSizeBase,
   showRoom, 
   showCode, 
-  roundedCorners,
-  opacity
+  borderRadius,
+  borderWidth,
+  opacity,
+  tableBgOpacity
 }: CustomizableScheduleTableProps) {
   const isDarkTheme = palette === "dark";
-  const colors = PALETTES[palette];
+  
+  // Resolve colors
+  let colors: { bg: string; border: string; text: string }[] = [];
+  if (palette === "custom" && customColors.length > 0) {
+    colors = customColors.map(c => ({
+      bg: c,
+      border: c,
+      text: getContrastYIQ(c)
+    }));
+  } else {
+    colors = PALETTES[palette as keyof typeof PALETTES] || PALETTES.pastel;
+  }
 
   return (
-    <div className="w-full relative" style={{ fontFamily: "Inter, sans-serif" }}>
+    <div className="w-full relative" style={{ fontFamily: fontFamily }}>
       <div
-        className="w-full grid backdrop-blur-sm"
+        className="w-full grid"
         style={{
           gridTemplateColumns: "60px repeat(6, 1fr)",
           gridTemplateRows: "40px repeat(20, minmax(24px, auto))",
@@ -82,9 +114,10 @@ export function CustomizableScheduleTable({
       >
         {/* Headers */}
         <div 
-          className="sticky top-0 left-0 z-10 flex items-center justify-center font-bold text-sm"
+          className="sticky top-0 left-0 z-10 flex items-center justify-center font-bold"
           style={{ 
-            backgroundColor: isDarkTheme ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.8)", 
+            fontSize: `${fontSizeBase}px`,
+            backgroundColor: isDarkTheme ? `rgba(0,0,0,${tableBgOpacity})` : `rgba(255,255,255,${tableBgOpacity})`, 
             color: isDarkTheme ? "#fff" : "#000",
             borderBottom: isDarkTheme ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
             borderRight: isDarkTheme ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)"
@@ -95,9 +128,10 @@ export function CustomizableScheduleTable({
         {DAYS.map((day) => (
           <div
             key={`header-${day}`}
-            className="sticky top-0 z-10 flex items-center justify-center font-bold text-sm"
+            className="sticky top-0 z-10 flex items-center justify-center font-bold"
             style={{ 
-              backgroundColor: isDarkTheme ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.8)", 
+              fontSize: `${fontSizeBase}px`,
+              backgroundColor: isDarkTheme ? `rgba(0,0,0,${tableBgOpacity})` : `rgba(255,255,255,${tableBgOpacity})`, 
               color: isDarkTheme ? "#fff" : "#000",
               borderBottom: isDarkTheme ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
               borderRight: isDarkTheme ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)"
@@ -113,11 +147,12 @@ export function CustomizableScheduleTable({
           return (
             <React.Fragment key={`bg-row-${period}`}>
               <div
-                className="flex items-center justify-center text-xs font-semibold"
+                className="flex items-center justify-center font-semibold"
                 style={{ 
+                  fontSize: `${fontSizeBase - 2}px`,
                   gridColumn: 1, 
                   gridRow: `${rowStart} / span 2`,
-                  backgroundColor: isDarkTheme ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.5)",
+                  backgroundColor: isDarkTheme ? `rgba(0,0,0,${Math.max(0, tableBgOpacity - 0.2)})` : `rgba(255,255,255,${Math.max(0, tableBgOpacity - 0.3)})`,
                   color: isDarkTheme ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.5)",
                   borderBottom: isDarkTheme ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.05)",
                   borderRight: isDarkTheme ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)"
@@ -142,7 +177,7 @@ export function CustomizableScheduleTable({
 
         {/* Classes */}
         {schedule.classes.map((selected, idx) => {
-          const cStyle = colors[idx % colors.length];
+          const cStyle = colors[idx % colors.length] || { bg: '#ffffff', border: '#cccccc', text: '#000000' };
           const bgRgba = hexToRgba(cStyle.bg, opacity);
           const borderRgba = hexToRgba(cStyle.border, opacity > 0.5 ? opacity : 0.5);
 
@@ -153,22 +188,22 @@ export function CustomizableScheduleTable({
             <React.Fragment key={`class-${idx}`}>
               {/* Main Class */}
               <div
-                className="m-1 p-2 flex flex-col gap-1 overflow-hidden z-20 shadow-sm"
+                className="m-1 p-2 flex flex-col gap-1 overflow-hidden z-20 shadow-sm transition-all"
                 style={{
                   gridColumn: main.schedule.dayOfWeek - 2 + 2,
                   gridRowStart: (main.schedule.startPeriod - 1) * 2 + 2,
                   gridRowEnd: main.schedule.endPeriod * 2 + 2,
                   backgroundColor: bgRgba,
                   borderColor: borderRgba,
-                  borderWidth: "1px",
+                  borderWidth: `${borderWidth}px`,
                   borderStyle: "solid",
                   color: cStyle.text,
-                  borderRadius: roundedCorners ? "8px" : "2px"
+                  borderRadius: `${borderRadius}px`
                 }}
               >
-                <div className="font-bold text-xs leading-tight line-clamp-2">{main.courseName}</div>
-                <div className="font-medium text-[10px] opacity-90">{main.className}</div>
-                <div className="mt-auto flex justify-between items-end text-[10px] opacity-80">
+                <div className="font-bold leading-tight line-clamp-2" style={{ fontSize: `${fontSizeBase}px` }}>{main.courseName}</div>
+                <div className="font-medium opacity-90" style={{ fontSize: `${Math.max(10, fontSizeBase - 4)}px` }}>{main.className}</div>
+                <div className="mt-auto flex justify-between items-end opacity-80" style={{ fontSize: `${Math.max(10, fontSizeBase - 4)}px` }}>
                   {showCode && <span>{main.courseCode}</span>}
                   {showRoom && <span className="font-medium">{main.schedule.room}</span>}
                 </div>
@@ -177,25 +212,25 @@ export function CustomizableScheduleTable({
               {/* Sub Class */}
               {sub && (
                 <div
-                  className="m-1 p-2 flex flex-col gap-1 overflow-hidden z-20 shadow-sm"
+                  className="m-1 p-2 flex flex-col gap-1 overflow-hidden z-20 shadow-sm transition-all"
                   style={{
                     gridColumn: sub.schedule.dayOfWeek - 2 + 2,
                     gridRowStart: (sub.schedule.startPeriod - 1) * 2 + 2,
                     gridRowEnd: sub.schedule.endPeriod * 2 + 2,
                     backgroundColor: bgRgba,
                     borderColor: borderRgba,
-                    borderWidth: "1px",
+                    borderWidth: `${borderWidth}px`,
                     borderStyle: "dashed",
                     color: cStyle.text,
-                    borderRadius: roundedCorners ? "8px" : "2px",
+                    borderRadius: `${borderRadius}px`,
                     backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, ${isDarkTheme ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)"} 10px, ${isDarkTheme ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)"} 20px)`
                   }}
                 >
-                  <div className="font-bold text-xs leading-tight line-clamp-1">
+                  <div className="font-bold leading-tight line-clamp-1" style={{ fontSize: `${fontSizeBase}px` }}>
                     {main.courseName} <span className="opacity-75 font-normal">({sub.type === "practical" ? "TH" : "BT"})</span>
                   </div>
-                  <div className="font-medium text-[10px] opacity-90">Nhóm {sub.groupCode}</div>
-                  <div className="mt-auto flex justify-between items-end text-[10px] opacity-80">
+                  <div className="font-medium opacity-90" style={{ fontSize: `${Math.max(10, fontSizeBase - 4)}px` }}>Nhóm {sub.groupCode}</div>
+                  <div className="mt-auto flex justify-between items-end opacity-80" style={{ fontSize: `${Math.max(10, fontSizeBase - 4)}px` }}>
                     {showCode && <span>{main.courseCode}</span>}
                     {showRoom && <span className="font-medium">{sub.schedule.room}</span>}
                   </div>
