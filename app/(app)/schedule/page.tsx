@@ -97,7 +97,7 @@ export default function SchedulePage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-8 xl:gap-12">
-        <div className="space-y-8">
+        <div className="space-y-8 min-w-0">
           <section>
             <div className="flex items-center gap-2 mb-4">
               <div className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">
