@@ -15,11 +15,7 @@ import {
 } from "@/lib/grades/actions";
 import { useRouter } from "next/navigation";
 
-function QuickInputCell({
-  rule,
-}: {
-  rule: ClassGradeData["rules"][0];
-}) {
+function QuickInputCell({ rule }: { rule: ClassGradeData["rules"][0] }) {
   const router = useRouter();
   const [value, setValue] = useState<string>(
     rule.inputValue !== null ? String(rule.inputValue) : "",
@@ -80,11 +76,7 @@ function QuickInputCell({
   );
 }
 
-function QuickAccumulateCell({
-  rule,
-}: {
-  rule: ClassGradeData["rules"][0];
-}) {
+function QuickAccumulateCell({ rule }: { rule: ClassGradeData["rules"][0] }) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const currentValue = rule.accumulateValue || 0;
@@ -163,7 +155,6 @@ export function QuickGradesCard({
     <Card className="shadow-sm">
       <CardHeader className="pb-3 border-b bg-muted/20">
         <CardTitle className="text-lg flex items-center gap-2">
-          <Zap className="h-5 w-5 text-yellow-500 fill-yellow-500" />
           Nhập Điểm Nhanh
         </CardTitle>
       </CardHeader>
