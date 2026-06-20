@@ -308,7 +308,7 @@ export function OfficialScheduleEditor({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8">
-      <div className="space-y-6">
+      <div className="space-y-6 min-w-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="json">Từ File JSON</TabsTrigger>
