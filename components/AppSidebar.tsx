@@ -39,6 +39,12 @@ export function AppSidebar() {
   const handleLogout = async () => {
     await logout();
     setUser(null);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("schedule_classes");
+      localStorage.removeItem("schedule_forbidden_mask");
+      localStorage.removeItem("schedule_preferred_mask");
+      localStorage.removeItem("schedule_requests");
+    }
     router.push("/");
     router.refresh();
   };
