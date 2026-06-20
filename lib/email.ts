@@ -16,24 +16,31 @@ export async function sendOTP(email: string, otp: string) {
     to: email,
     subject: "Mã xác thực đăng ký Portal Helper",
     html: `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background-color: #f9fafb;">
-      <div style="background-color: #0d9488; color: white; padding: 20px; text-align: center;">
-        <h1 style="margin: 0; font-size: 24px; font-weight: bold;">Portal Helper</h1>
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 40px auto; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb;">
+      <div style="background: linear-gradient(135deg, #0d9488 0%, #d97706 100%); color: white; padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Portal Helper</h1>
+        <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">Xác thực tài khoản của bạn</p>
       </div>
-      <div style="padding: 30px;">
-        <p style="font-size: 16px; color: #111827;"><strong>Chào bạn,</strong></p>
-        <p style="font-size: 16px; color: #4b5563; line-height: 1.5;">
-          Bạn vừa yêu cầu mã xác thực để đăng ký trên hệ thống hỗ trợ học tập thông minh <strong>FITUSocial</strong>. Vui lòng sử dụng mã OTP dưới đây:
+      <div style="padding: 40px 30px;">
+        <p style="font-size: 16px; color: #1f2937; margin-top: 0;"><strong>Chào bạn,</strong></p>
+        <p style="font-size: 16px; color: #4b5563; line-height: 1.6;">
+          Chúng tôi nhận được yêu cầu lấy mã xác thực để tiếp tục quá trình đăng ký tài khoản trên hệ thống <strong>Portal Helper</strong>. Vui lòng nhập mã OTP dưới đây để hoàn tất:
         </p>
-        <div style="margin: 30px 0; padding: 20px; text-align: center; background-color: #f0fdfa; border: 2px dashed #14b8a6; border-radius: 8px;">
-          <span style="font-size: 32px; font-weight: bold; color: #0f766e; letter-spacing: 8px;">${otp.split("").join(" ")}</span>
+        
+        <div style="margin: 35px 0; padding: 4px; background: linear-gradient(135deg, #0d9488, #d97706); border-radius: 12px;">
+          <div style="background-color: #ffffff; padding: 25px 15px; border-radius: 8px; text-align: center;">
+            <span style="font-size: 36px; font-weight: 900; color: #0d9488; letter-spacing: 8px;">${otp.trim()}</span>
+          </div>
         </div>
-        <p style="text-align: center; font-size: 14px; color: #4b5563;">
-          Mã này có hiệu lực trong vòng <strong>5 phút</strong>.
+        
+        <p style="text-align: center; font-size: 14px; color: #6b7280; margin-bottom: 0;">
+          Mã xác thực này chỉ có hiệu lực trong vòng <strong>5 phút</strong>.
         </p>
-        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
-        <p style="text-align: center; font-size: 14px; color: #d97706; display: flex; align-items: center; justify-content: center; gap: 8px;">
-          <span style="font-size: 16px;">⚠️</span> Tuyệt đối không chia sẻ mã này với bất kỳ ai để bảo vệ tài khoản của bạn.
+      </div>
+      
+      <div style="background-color: #fffbeb; padding: 20px 30px; border-top: 1px solid #fde68a;">
+        <p style="margin: 0; text-align: center; font-size: 13px; color: #b45309; line-height: 1.5;">
+          <strong>⚠️ Cảnh báo bảo mật:</strong> Tuyệt đối không chia sẻ mã này với bất kỳ ai (kể cả nhân viên quản trị) để tránh rủi ro mất tài khoản.
         </p>
       </div>
     </div>
