@@ -117,13 +117,12 @@ export default function SchedulePage() {
               <ClassDataDropzone onDataLoaded={setClasses} />
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center justify-between bg-muted/30 p-3 rounded-lg border border-border/50 mt-4">
+                <div className="flex items-center justify-between bg-muted/30 p-3 rounded-lg border border-border/50">
                   <p className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
                     Đã nạp {classes.length} lớp học.
                   </p>
                   <Button 
-                    variant="outline" 
                     size="sm" 
                     onClick={() => setClasses([])}
                     className="h-8 text-xs font-medium"

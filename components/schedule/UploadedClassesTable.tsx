@@ -174,7 +174,7 @@ export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, 
       </div>
 
       <div className="rounded-md border bg-card shadow-sm">
-        <ScrollArea className="h-[400px] w-full">
+        <ScrollArea className="h-[550px] w-full">
           <div className="w-max min-w-full">
             <Table className={`table-fixed ${onSelectClass ? "w-[850px]" : "w-[800px]"}`}>
               <TableHeader className="sticky top-0 bg-secondary z-10 shadow-sm">
