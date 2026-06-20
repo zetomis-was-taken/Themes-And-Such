@@ -308,7 +308,7 @@ export function OfficialScheduleEditor({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8">
-      <div className="space-y-6">
+      <div className="space-y-6 min-w-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="json">Từ File JSON</TabsTrigger>
@@ -316,8 +316,8 @@ export function OfficialScheduleEditor({
           </TabsList>
 
           <TabsContent value="json" className="space-y-4 pt-4">
-            <Card>
-              <CardContent className="pt-6 space-y-4">
+            <Card className="overflow-hidden">
+              <CardContent className="pt-6 space-y-4 overflow-hidden">
                 <ClassDataDropzone
                   onDataLoaded={(data) => {
                     setJsonClasses(data);
@@ -642,7 +642,7 @@ export function OfficialScheduleEditor({
         </Tabs>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 min-w-0">
         <div className="flex items-center justify-between bg-card p-4 rounded-lg border shadow-sm">
           <div>
             <h3 className="font-semibold text-lg">Lịch của bạn</h3>
