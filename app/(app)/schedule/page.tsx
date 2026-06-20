@@ -24,7 +24,7 @@ import {
 import { ScheduleGenerator } from "@/lib/algo/generator";
 import { ScheduleViewer } from "@/components/schedule/ScheduleViewer";
 import { Button } from "@/components/ui/button";
-import { Calculator } from "lucide-react";
+import { Calculator, RefreshCw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 import Link from "next/link";
@@ -113,13 +113,25 @@ export default function SchedulePage() {
               </div>
               <h2 className="text-xl font-semibold">Dữ liệu Lớp học</h2>
             </div>
-            <ClassDataDropzone onDataLoaded={setClasses} />
-            {classes.length > 0 && (
-              <div className="mt-4 space-y-4">
-                <p className="text-sm text-green-600 font-medium flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>{" "}
-                  Đã nạp {classes.length} lớp học.
-                </p>
+            {classes.length === 0 ? (
+              <ClassDataDropzone onDataLoaded={setClasses} />
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between bg-muted/30 p-3 rounded-lg border border-border/50 mt-4">
+                  <p className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
+                    Đã nạp {classes.length} lớp học.
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setClasses([])}
+                    className="h-8 text-xs font-medium"
+                  >
+                    <RefreshCw className="w-3 h-3 mr-2" />
+                    Nhập lại danh sách
+                  </Button>
+                </div>
                 <UploadedClassesTable classes={classes} />
               </div>
             )}
