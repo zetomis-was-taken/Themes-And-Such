@@ -139,3 +139,107 @@ export async function requireUserId(): Promise<number | null> {
   const session = await getSession();
   return session?.userId ?? null;
 }
+
+export async function updateName(
+  newName: string
+): Promise<{ success: boolean; error?: string }> {
+  const session = await getSession();
+  if (!session) return { success: false, error: "Chưa đăng nhập." };
+
+  const existing = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.name, newName))
+    .limit(1);
+
+  if (existing.length > 0 && existing[0].id !== session.userId) {
+    return { success: false, error: "Tên hiển thị này đã được sử dụng." };
+  }
+
+  await db
+    .update(users)
+    .set({ name: newName })
+    .where(eq(users.id, session.userId));
+
+  return { success: true };
+}
+
+export async function sendPasswordChangeOtp(): Promise<{
+  success: boolean;
+  error?: string;
+  email?: string;
+}> {
+  const session = await getSession();
+  if (!session) return { success: false, error: "Chưa đăng nhập." };
+
+  const [user] = await db
+    .select({ email: users.email })
+    .from(users)
+    .where(eq(users.id, session.userId))
+    .limit(1);
+
+  if (!user || !user.email) {
+    return { success: false, error: "Không tìm thấy thông tin email của tài khoản." };
+  }
+
+  const otp = Math.floor(10000000 + Math.random() * 90000000).toString();
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+  await db.insert(otps).values({ email: user.email, otp, expiresAt });
+
+  try {
+    await sendOTP(user.email, otp);
+  } catch (error) {
+    console.error("Lỗi khi gửi email:", error);
+    return {
+      success: false,
+      error: "Không thể gửi email xác thực. Vui lòng thử lại.",
+    };
+  }
+
+  return { success: true, email: user.email };
+}
+
+export async function verifyAndChangePassword(
+  otpCode: string,
+  newPassword: string
+): Promise<{ success: boolean; error?: string }> {
+  const session = await getSession();
+  if (!session) return { success: false, error: "Chưa đăng nhập." };
+
+  const [user] = await db
+    .select({ email: users.email })
+    .from(users)
+    .where(eq(users.id, session.userId))
+    .limit(1);
+
+  if (!user || !user.email) {
+    return { success: false, error: "Không tìm thấy thông tin tài khoản." };
+  }
+
+  const [record] = await db
+    .select()
+    .from(otps)
+    .where(eq(otps.email, user.email))
+    .orderBy(desc(otps.id))
+    .limit(1);
+
+  if (!record || record.otp !== otpCode) {
+    return { success: false, error: "Mã OTP không hợp lệ." };
+  }
+
+  if (new Date() > record.expiresAt) {
+    return { success: false, error: "Mã OTP đã hết hạn." };
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  await db
+    .update(users)
+    .set({ password: hashedPassword })
+    .where(eq(users.id, session.userId));
+
+  await db.delete(otps).where(eq(otps.email, user.email));
+
+  return { success: true };
+}

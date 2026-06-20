@@ -145,6 +145,11 @@ export function AppSidebar() {
                   side="right"
                   forceMount
                 >
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link href="/dashboard/settings" className="w-full">
+                      Cài đặt
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={handleLogout}
                     className="text-red-600 dark:text-red-400 cursor-pointer focus:text-red-600 focus:dark:text-red-400"
