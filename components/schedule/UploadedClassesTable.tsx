@@ -73,15 +73,15 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
       <div className="rounded-md border bg-card shadow-sm">
         <ScrollArea className="h-[400px] w-full">
           <div className="w-max min-w-full">
-            <Table className="w-[1000px] table-fixed">
+            <Table className="w-[800px] table-fixed">
               <TableHeader className="sticky top-0 bg-secondary z-10 shadow-sm">
                 <TableRow>
-                  <TableHead className="font-semibold text-foreground w-[120px]">Mã Môn</TableHead>
-                  <TableHead className="font-semibold text-foreground w-[240px]">Tên Môn</TableHead>
-                  <TableHead className="font-semibold text-foreground text-center w-[80px]">Tín Chỉ</TableHead>
-                  <TableHead className="font-semibold text-foreground w-[120px]">Lớp</TableHead>
-                  <TableHead className="font-semibold text-foreground w-[160px]">Lịch Học</TableHead>
-                  <TableHead className="font-semibold text-foreground w-[280px]">Thực Hành</TableHead>
+                  <TableHead className="font-semibold text-foreground w-[100px]">Mã Môn</TableHead>
+                  <TableHead className="font-semibold text-foreground w-[180px]">Tên Môn</TableHead>
+                  <TableHead className="font-semibold text-foreground text-center w-[70px]">Tín Chỉ</TableHead>
+                  <TableHead className="font-semibold text-foreground w-[90px]">Lớp</TableHead>
+                  <TableHead className="font-semibold text-foreground w-[120px]">Lịch Học</TableHead>
+                  <TableHead className="font-semibold text-foreground w-[240px]">Thực Hành</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -91,7 +91,11 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
                       <TableCell className="font-bold text-primary whitespace-nowrap">
                         {c.courseCode}
                       </TableCell>
-                      <TableCell className="font-medium">{c.courseName}</TableCell>
+                      <TableCell className="font-medium whitespace-normal" title={c.courseName}>
+                        <div className="line-clamp-2 break-words">
+                          {c.courseName}
+                        </div>
+                      </TableCell>
                       <TableCell className="text-center font-semibold text-muted-foreground whitespace-nowrap">{c.credits || 3}</TableCell>
                       <TableCell className="whitespace-nowrap">
                         <Badge variant="outline" className="font-medium bg-background">
