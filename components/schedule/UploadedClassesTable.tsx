@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 interface UploadedClassesTableProps {
   classes: ClassData[];
@@ -22,16 +23,32 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDay, setFilterDay] = useState("all");
 
-  const filteredClasses = useMemo(() => {
+  const groupedCourses = useMemo(() => {
     if (!classes) return [];
-    return classes.filter((c) => {
+    
+    // Group classes by courseCode
+    const groups: Record<string, { courseCode: string, courseName: string, credits: number, classes: ClassData[] }> = {};
+    for (const c of classes) {
+      if (!groups[c.courseCode]) {
+        groups[c.courseCode] = {
+          courseCode: c.courseCode,
+          courseName: c.courseName,
+          credits: c.credits,
+          classes: []
+        };
+      }
+      groups[c.courseCode].classes.push(c);
+    }
+    
+    // Apply filters
+    return Object.values(groups).filter((group) => {
       const searchLower = searchTerm.toLowerCase();
       const matchSearch =
-        c.courseCode.toLowerCase().includes(searchLower) ||
-        c.courseName.toLowerCase().includes(searchLower) ||
-        c.className.toLowerCase().includes(searchLower);
+        group.courseCode.toLowerCase().includes(searchLower) ||
+        group.courseName.toLowerCase().includes(searchLower) ||
+        group.classes.some(c => c.className.toLowerCase().includes(searchLower));
 
-      const matchDay = filterDay === "all" || c.schedule.dayOfWeek.toString() === filterDay;
+      const matchDay = filterDay === "all" || group.classes.some(c => c.schedule.dayOfWeek.toString() === filterDay);
 
       return matchSearch && matchDay;
     });
@@ -70,75 +87,93 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
         </div>
       </div>
 
-      <div className="rounded-md border bg-card shadow-sm">
+      <div className="rounded-md border bg-card shadow-sm min-w-0">
         <ScrollArea className="h-[400px] w-full">
-          <div className="w-max min-w-full">
-            <Table className="w-[1000px] table-fixed">
+          <div className="w-full">
+            <Table className="w-full">
               <TableHeader className="sticky top-0 bg-secondary z-10 shadow-sm">
                 <TableRow>
                   <TableHead className="font-semibold text-foreground w-[120px]">Mã Môn</TableHead>
-                  <TableHead className="font-semibold text-foreground w-[240px]">Tên Môn</TableHead>
+                  <TableHead className="font-semibold text-foreground max-w-[250px]">Tên Môn</TableHead>
                   <TableHead className="font-semibold text-foreground text-center w-[80px]">Tín Chỉ</TableHead>
-                  <TableHead className="font-semibold text-foreground w-[120px]">Lớp</TableHead>
-                  <TableHead className="font-semibold text-foreground w-[160px]">Lịch Học</TableHead>
-                  <TableHead className="font-semibold text-foreground w-[280px]">Thực Hành</TableHead>
+                  <TableHead className="font-semibold text-foreground">Các Lớp</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredClasses.length > 0 ? (
-                  filteredClasses.map((c, idx) => (
-                    <TableRow key={`${c.courseCode}-${c.className}-${idx}`} className="hover:bg-muted/50 transition-colors">
-                      <TableCell className="font-bold text-primary whitespace-nowrap">
-                        {c.courseCode}
+                {groupedCourses.length > 0 ? (
+                  groupedCourses.map((group, idx) => (
+                    <TableRow key={`${group.courseCode}-${idx}`} className="hover:bg-muted/50 transition-colors">
+                      <TableCell className="font-bold text-primary whitespace-nowrap align-top pt-4">
+                        {group.courseCode}
                       </TableCell>
-                      <TableCell className="font-medium">{c.courseName}</TableCell>
-                      <TableCell className="text-center font-semibold text-muted-foreground whitespace-nowrap">{c.credits || 3}</TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        <Badge variant="outline" className="font-medium bg-background">
-                          {c.className}
-                        </Badge>
+                      <TableCell className="font-medium align-top pt-4 max-w-[250px] whitespace-normal break-words">
+                        {group.courseName}
                       </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        <div className="flex flex-col gap-1 text-sm">
-                          <span className="font-medium">
-                            Thứ <span className="text-amber-600 dark:text-amber-500 font-bold">{c.schedule.dayOfWeek}</span>
-                          </span>
-                          <span className="text-muted-foreground">
-                            Tiết <span className="text-primary font-bold">{c.schedule.startPeriod}-{c.schedule.endPeriod}</span>
-                          </span>
-                          {c.schedule.room && (
-                            <span className="text-xs opacity-70">P.{c.schedule.room}</span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {c.subClasses && c.subClasses.length > 0 ? (
-                          <div className="flex flex-col gap-2 min-w-[200px]">
-                            {c.subClasses.map((sc, scIdx) => (
-                              <div key={scIdx} className="text-sm bg-muted/30 p-2 rounded border border-border/50">
-                                <span className="font-semibold text-xs uppercase tracking-wider block mb-1 opacity-80">
-                                  {sc.type === "practical" ? "Thực hành" : "Bài tập"} - Nhóm {sc.groupCode}
-                                </span>
-                                <div className="flex justify-between items-center gap-4">
-                                  <span className="whitespace-nowrap">Thứ <span className="text-amber-600 dark:text-amber-500 font-bold">{sc.schedule.dayOfWeek}</span></span>
-                                  <span className="whitespace-nowrap">Tiết <span className="text-primary font-bold">{sc.schedule.startPeriod}-{sc.schedule.endPeriod}</span></span>
+                      <TableCell className="text-center font-semibold text-muted-foreground whitespace-nowrap align-top pt-4">{group.credits || 3}</TableCell>
+                      <TableCell className="align-top py-4">
+                        <div className="flex flex-wrap gap-1.5">
+                          {group.classes.map((c, cIdx) => (
+                            <HoverCard key={cIdx} openDelay={200} closeDelay={100}>
+                              <HoverCardTrigger asChild>
+                                <Badge variant="outline" className="cursor-default hover:bg-primary/10 transition-colors">
+                                  {c.className}
+                                </Badge>
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80 shadow-lg" side="top" align="start">
+                                <div className="space-y-3">
+                                  <div>
+                                    <h4 className="font-bold text-primary">{c.className}</h4>
+                                    <p className="text-sm text-muted-foreground">{c.courseName}</p>
+                                  </div>
+                                  
+                                  <div className="space-y-1.5 border-t pt-2">
+                                    <p className="font-semibold text-sm">Lịch học chính:</p>
+                                    <div className="flex items-center gap-2 text-sm bg-muted/30 p-2 rounded">
+                                      <span>Thứ <span className="font-bold text-amber-600 dark:text-amber-500">{c.schedule.dayOfWeek}</span></span>
+                                      <span className="text-muted-foreground">|</span>
+                                      <span>Tiết <span className="font-bold text-primary">{c.schedule.startPeriod}-{c.schedule.endPeriod}</span></span>
+                                      {c.schedule.room && (
+                                        <>
+                                          <span className="text-muted-foreground">|</span>
+                                          <span>P.{c.schedule.room}</span>
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  {c.subClasses && c.subClasses.length > 0 && (
+                                    <div className="pt-2 border-t space-y-2">
+                                      <p className="font-semibold text-sm">Thực hành / Bài tập:</p>
+                                      {c.subClasses.map((sc, scIdx) => (
+                                        <div key={scIdx} className="bg-muted/50 p-2 rounded text-sm space-y-1">
+                                          <p className="font-medium opacity-80">Nhóm {sc.groupCode} - {sc.type === "practical" ? "Thực hành" : "Bài tập"}</p>
+                                          <div className="flex flex-wrap items-center gap-2">
+                                            <span>Thứ <span className="font-bold text-amber-600 dark:text-amber-500">{sc.schedule.dayOfWeek}</span></span>
+                                            <span className="text-muted-foreground">|</span>
+                                            <span>Tiết <span className="font-bold text-primary">{sc.schedule.startPeriod}-{sc.schedule.endPeriod}</span></span>
+                                            {sc.schedule.room && (
+                                              <>
+                                                <span className="text-muted-foreground">|</span>
+                                                <span>P.{sc.schedule.room}</span>
+                                              </>
+                                            )}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
-                                {sc.schedule.room && (
-                                  <div className="text-xs opacity-70 mt-0.5">P.{sc.schedule.room}</div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground text-sm italic opacity-70">-</span>
-                        )}
+                              </HoverCardContent>
+                            </HoverCard>
+                          ))}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
-                      Không tìm thấy kết quả nào.
+                    <TableCell colSpan={4} className="h-24 text-center">
+                      Không tìm thấy môn học nào.
                     </TableCell>
                   </TableRow>
                 )}
