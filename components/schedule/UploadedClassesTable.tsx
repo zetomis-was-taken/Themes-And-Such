@@ -16,9 +16,11 @@ import { Search } from "lucide-react";
 
 interface UploadedClassesTableProps {
   classes: ClassData[];
+  onSelectClass?: (courseCode: string, className: string) => void;
+  selectedClassId?: string;
 }
 
-export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
+export function UploadedClassesTable({ classes, onSelectClass, selectedClassId }: UploadedClassesTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDay, setFilterDay] = useState("all");
 
@@ -73,9 +75,12 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
       <div className="rounded-md border bg-card shadow-sm">
         <ScrollArea className="h-[400px] w-full">
           <div className="w-max min-w-full">
-            <Table className="w-[800px] table-fixed">
+            <Table className={`table-fixed ${onSelectClass ? "w-[850px]" : "w-[800px]"}`}>
               <TableHeader className="sticky top-0 bg-secondary z-10 shadow-sm">
                 <TableRow>
+                  {onSelectClass && (
+                    <TableHead className="w-[50px]"></TableHead>
+                  )}
                   <TableHead className="font-semibold text-foreground w-[100px]">Mã Môn</TableHead>
                   <TableHead className="font-semibold text-foreground w-[180px]">Tên Môn</TableHead>
                   <TableHead className="font-semibold text-foreground text-center w-[70px]">Tín Chỉ</TableHead>
@@ -86,8 +91,21 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
               </TableHeader>
               <TableBody>
                 {filteredClasses.length > 0 ? (
-                  filteredClasses.map((c, idx) => (
-                    <TableRow key={`${c.courseCode}-${c.className}-${idx}`} className="hover:bg-muted/50 transition-colors">
+                  filteredClasses.map((c, idx) => {
+                    const isSelected = selectedClassId === c.className;
+                    return (
+                    <TableRow 
+                      key={`${c.courseCode}-${c.className}-${idx}`} 
+                      className={`hover:bg-muted/50 transition-colors ${onSelectClass ? 'cursor-pointer' : ''} ${isSelected ? 'bg-primary/5' : ''}`}
+                      onClick={() => onSelectClass?.(c.courseCode, c.className)}
+                    >
+                      {onSelectClass && (
+                        <TableCell>
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center mx-auto ${isSelected ? 'border-primary bg-primary' : 'border-primary/50 bg-transparent'}`}>
+                            {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground" />}
+                          </div>
+                        </TableCell>
+                      )}
                       <TableCell className="font-bold text-primary whitespace-nowrap">
                         {c.courseCode}
                       </TableCell>
@@ -138,10 +156,11 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
                         )}
                       </TableCell>
                     </TableRow>
-                  ))
+                  );
+                })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
+                    <TableCell colSpan={onSelectClass ? 7 : 6} className="h-24 text-center">
                       Không tìm thấy kết quả nào.
                     </TableCell>
                   </TableRow>

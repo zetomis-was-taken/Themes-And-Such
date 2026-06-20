@@ -333,7 +333,15 @@ export function OfficialScheduleEditor({
                       <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>{" "}
                       Đã nạp {jsonClasses.length} lớp học.
                     </p>
-                    <UploadedClassesTable classes={jsonClasses} />
+                    <UploadedClassesTable 
+                      classes={jsonClasses} 
+                      selectedClassId={selectedClassId}
+                      onSelectClass={(courseCode, className) => {
+                        setSearchCourseCode(courseCode);
+                        setSelectedClassId(className);
+                        setSelectedSubClassGroup("");
+                      }}
+                    />
                   </div>
                 )}
 
