@@ -1,34 +1,74 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { eq, or, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { users, type SafeUser } from "@/lib/db/schema";
+import { users, otps, type SafeUser } from "@/lib/db/schema";
+import { sendOTP } from "@/lib/email";
 import { createSession, deleteSession, getSession } from "./session";
 
 export type AuthResult =
   | { success: true; user: SafeUser }
   | { success: false; error: string };
 
-export async function register(
+export async function sendRegistrationOtp(
   name: string,
-  password: string
-): Promise<AuthResult> {
+  email: string,
+): Promise<{ success: boolean; error?: string }> {
   const existing = await db
     .select({ id: users.id })
     .from(users)
-    .where(eq(users.name, name))
+    .where(or(eq(users.name, name), eq(users.email, email)))
     .limit(1);
 
   if (existing.length > 0) {
-    return { success: false, error: "Tên đăng nhập đã tồn tại." };
+    return { success: false, error: "Tên đăng nhập hoặc email đã tồn tại." };
+  }
+
+  const otp = Math.floor(10000000 + Math.random() * 90000000).toString();
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+  await db.insert(otps).values({ email, otp, expiresAt });
+
+  try {
+    await sendOTP(email, otp);
+  } catch (error) {
+    console.error("Lỗi khi gửi email:", error);
+    return {
+      success: false,
+      error: "Không thể gửi email xác thực. Vui lòng thử lại.",
+    };
+  }
+
+  return { success: true };
+}
+
+export async function verifyRegistrationOtp(
+  name: string,
+  email: string,
+  password: string,
+  otpCode: string,
+): Promise<AuthResult> {
+  const [record] = await db
+    .select()
+    .from(otps)
+    .where(eq(otps.email, email))
+    .orderBy(desc(otps.id))
+    .limit(1);
+
+  if (!record || record.otp !== otpCode) {
+    return { success: false, error: "Mã OTP không hợp lệ." };
+  }
+
+  if (new Date() > record.expiresAt) {
+    return { success: false, error: "Mã OTP đã hết hạn." };
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const [newUser] = await db
     .insert(users)
-    .values({ name, password: hashedPassword })
+    .values({ name, email, password: hashedPassword })
     .returning({
       id: users.id,
       name: users.name,
@@ -41,13 +81,14 @@ export async function register(
   }
 
   await createSession(newUser.id);
+  await db.delete(otps).where(eq(otps.email, email));
 
-  return { success: true, user: newUser };
+  return { success: true, user: newUser as SafeUser };
 }
 
 export async function login(
   name: string,
-  password: string
+  password: string,
 ): Promise<AuthResult> {
   const [user] = await db
     .select()
@@ -85,6 +126,7 @@ export async function getCurrentUser(): Promise<SafeUser | null> {
       name: users.name,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
+      email: users.email,
     })
     .from(users)
     .where(eq(users.id, session.userId))
