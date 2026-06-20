@@ -4,6 +4,7 @@ import { timestamps } from "./timestamps";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
+  email: text("email").notNull().unique(),
   password: text("password").notNull(),
   ...timestamps,
 });
