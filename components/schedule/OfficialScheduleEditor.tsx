@@ -336,6 +336,8 @@ export function OfficialScheduleEditor({
                     <UploadedClassesTable 
                       classes={jsonClasses} 
                       selectedClassId={selectedClassId}
+                      scheduledCourseCodes={mySchedule.map(s => s.classData.courseCode)}
+                      scheduledClassIds={mySchedule.map(s => s.classData.className)}
                       onSelectClass={(courseCode, className) => {
                         setSearchCourseCode(courseCode);
                         setSelectedClassId(className);
