@@ -44,9 +44,9 @@ function randomDate(): string {
 // ---------------------------------------------------------------------------
 
 const USER_DATA = [
-  { name: "alice", password: "password123" },
-  { name: "bob", password: "secret456" },
-  { name: "charlie", password: "hello789" },
+  { name: "alice", email: "alice@example.com", password: "password123" },
+  { name: "bob", email: "bob@example.com", password: "secret456" },
+  { name: "charlie", email: "charlie@example.com", password: "hello789" },
 ];
 
 const COURSES = [
@@ -109,6 +109,7 @@ async function seed() {
       await Promise.all(
         USER_DATA.map(async (u) => ({
           name: u.name,
+          email: u.email,
           password: await bcrypt.hash(u.password, 10),
         })),
       ),

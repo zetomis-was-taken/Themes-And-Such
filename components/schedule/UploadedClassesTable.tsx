@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 interface UploadedClassesTableProps {
   classes: ClassData[];
@@ -36,16 +37,32 @@ export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, 
     });
   };
 
-  const filteredClasses = useMemo(() => {
+  const groupedCourses = useMemo(() => {
     if (!classes) return [];
-    return classes.filter((c) => {
+    
+    // Group classes by courseCode
+    const groups: Record<string, { courseCode: string, courseName: string, credits: number, classes: ClassData[] }> = {};
+    for (const c of classes) {
+      if (!groups[c.courseCode]) {
+        groups[c.courseCode] = {
+          courseCode: c.courseCode,
+          courseName: c.courseName,
+          credits: c.credits,
+          classes: []
+        };
+      }
+      groups[c.courseCode].classes.push(c);
+    }
+    
+    // Apply filters
+    return Object.values(groups).filter((group) => {
       const searchLower = searchTerm.toLowerCase();
       const matchSearch =
-        c.courseCode.toLowerCase().includes(searchLower) ||
-        c.courseName.toLowerCase().includes(searchLower) ||
-        c.className.toLowerCase().includes(searchLower);
+        group.courseCode.toLowerCase().includes(searchLower) ||
+        group.courseName.toLowerCase().includes(searchLower) ||
+        group.classes.some(c => c.className.toLowerCase().includes(searchLower));
 
-      const matchDay = filterDay === "all" || c.schedule.dayOfWeek.toString() === filterDay;
+      const matchDay = filterDay === "all" || group.classes.some(c => c.schedule.dayOfWeek.toString() === filterDay);
 
       return matchSearch && matchDay;
     });

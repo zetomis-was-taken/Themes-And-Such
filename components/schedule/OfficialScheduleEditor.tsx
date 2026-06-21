@@ -667,7 +667,7 @@ export function OfficialScheduleEditor({
         </Tabs>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 min-w-0">
         <div className="flex items-center justify-between bg-card p-4 rounded-lg border shadow-sm">
           <div>
             <h3 className="font-semibold text-lg">Lịch của bạn</h3>
