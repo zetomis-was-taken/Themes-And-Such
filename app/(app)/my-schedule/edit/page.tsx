@@ -16,7 +16,7 @@ export default async function ScheduleEditPage() {
   const initialSchedule = await getOfficialSchedule();
 
   return (
-    <div className="container max-w-7xl mx-auto py-8 px-4 space-y-8 pb-20">
+    <div className="container max-w-[1600px] mx-auto py-8 px-4 space-y-8 pb-20">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">

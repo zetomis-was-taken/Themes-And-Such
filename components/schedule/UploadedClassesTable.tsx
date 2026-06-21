@@ -12,47 +12,154 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search } from "lucide-react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Search, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface UploadedClassesTableProps {
   classes: ClassData[];
+  onSelectClass?: (courseCode: string, className: string) => void;
+  selectedClassId?: string;
+  scheduledCourseCodes?: string[];
+  scheduledClassIds?: string[];
+  onAddCourseRequest?: (courseCode: string) => void;
 }
 
-export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
+export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, scheduledCourseCodes = [], scheduledClassIds = [], onAddCourseRequest }: UploadedClassesTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDay, setFilterDay] = useState("all");
+  const [expandedCourseCodes, setExpandedCourseCodes] = useState<Set<string>>(new Set());
 
-  const groupedCourses = useMemo(() => {
+  const toggleExpand = (code: string) => {
+    setExpandedCourseCodes(prev => {
+      const next = new Set(prev);
+      if (next.has(code)) next.delete(code);
+      else next.add(code);
+      return next;
+    });
+  };
+
+  const filteredClasses = useMemo(() => {
     if (!classes) return [];
     
-    // Group classes by courseCode
-    const groups: Record<string, { courseCode: string, courseName: string, credits: number, classes: ClassData[] }> = {};
-    for (const c of classes) {
-      if (!groups[c.courseCode]) {
-        groups[c.courseCode] = {
-          courseCode: c.courseCode,
-          courseName: c.courseName,
-          credits: c.credits,
-          classes: []
-        };
-      }
-      groups[c.courseCode].classes.push(c);
-    }
-    
-    // Apply filters
-    return Object.values(groups).filter((group) => {
+    return classes.filter((c) => {
       const searchLower = searchTerm.toLowerCase();
       const matchSearch =
-        group.courseCode.toLowerCase().includes(searchLower) ||
-        group.courseName.toLowerCase().includes(searchLower) ||
-        group.classes.some(c => c.className.toLowerCase().includes(searchLower));
+        c.courseCode.toLowerCase().includes(searchLower) ||
+        c.courseName.toLowerCase().includes(searchLower) ||
+        c.className.toLowerCase().includes(searchLower);
 
-      const matchDay = filterDay === "all" || group.classes.some(c => c.schedule.dayOfWeek.toString() === filterDay);
+      const matchDay = filterDay === "all" || c.schedule.dayOfWeek.toString() === filterDay;
 
       return matchSearch && matchDay;
     });
   }, [classes, searchTerm, filterDay]);
+
+  const groupedClasses = useMemo(() => {
+    const groups: { courseCode: string; classes: ClassData[] }[] = [];
+    const map = new Map<string, number>();
+    
+    filteredClasses.forEach((c) => {
+      if (map.has(c.courseCode)) {
+        groups[map.get(c.courseCode)!].classes.push(c);
+      } else {
+        map.set(c.courseCode, groups.length);
+        groups.push({ courseCode: c.courseCode, classes: [c] });
+      }
+    });
+    return groups;
+  }, [filteredClasses]);
+
+  const renderRow = (c: ClassData, idx: number, isGrayedOut: boolean) => {
+    const isSelected = selectedClassId === c.className;
+    
+    const handleClick = () => {
+      if (isGrayedOut) return;
+      onSelectClass?.(c.courseCode, c.className);
+    };
+
+    return (
+      <TableRow 
+        key={`${c.courseCode}-${c.className}-${idx}`} 
+        className={`transition-colors ${isGrayedOut ? 'opacity-50 bg-muted/20' : 'hover:bg-muted/50'} ${(onSelectClass || onAddCourseRequest) && !isGrayedOut ? 'cursor-pointer' : ''} ${isSelected ? 'bg-primary/5' : ''}`}
+        onClick={handleClick}
+      >
+        {onSelectClass && (
+          <TableCell>
+            <div className={`w-4 h-4 rounded-full border flex items-center justify-center mx-auto ${isSelected ? 'border-primary bg-primary' : 'border-primary/50 bg-transparent'} ${isGrayedOut ? 'opacity-50' : ''}`}>
+              {isSelected && <div className="w-2 h-2 bg-white rounded-full" />}
+            </div>
+          </TableCell>
+        )}
+        {onAddCourseRequest && (
+          <TableCell>
+            <div className="flex justify-center items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-8 h-8 rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isGrayedOut) return;
+                  onAddCourseRequest(c.courseCode);
+                }}
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
+          </TableCell>
+        )}
+        <TableCell className="font-bold text-primary whitespace-nowrap pl-6">
+          {c.courseCode}
+        </TableCell>
+        <TableCell className="font-medium whitespace-normal" title={c.courseName}>
+          <div className="line-clamp-2 break-words">
+            {c.courseName}
+          </div>
+        </TableCell>
+        <TableCell className="text-center font-semibold text-muted-foreground whitespace-nowrap">{c.credits || 3}</TableCell>
+        <TableCell className="whitespace-nowrap">
+          <Badge variant="outline" className="font-medium bg-background">
+            {c.className}
+          </Badge>
+        </TableCell>
+        <TableCell className="whitespace-nowrap">
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">
+              Thứ <span className="text-amber-600 dark:text-amber-500 font-bold">{c.schedule.dayOfWeek}</span>
+            </span>
+            <span className="text-muted-foreground">
+              Tiết <span className="text-primary font-bold">{c.schedule.startPeriod}-{c.schedule.endPeriod}</span>
+            </span>
+            {c.schedule.room && (
+              <span className="text-xs opacity-70">P.{c.schedule.room}</span>
+            )}
+          </div>
+        </TableCell>
+        <TableCell>
+          {c.subClasses && c.subClasses.length > 0 ? (
+            <div className="flex flex-col gap-2 min-w-[200px]">
+              {c.subClasses.map((sc, scIdx) => (
+                <div key={scIdx} className="text-sm bg-muted/30 p-2 rounded border border-border/50">
+                  <span className="font-semibold text-xs uppercase tracking-wider block mb-1 opacity-80">
+                    {sc.type === "practical" ? "Thực hành" : "Bài tập"} - Nhóm {sc.groupCode}
+                  </span>
+                  <div className="flex justify-between items-center gap-4">
+                    <span className="whitespace-nowrap">Thứ <span className="text-amber-600 dark:text-amber-500 font-bold">{sc.schedule.dayOfWeek}</span></span>
+                    <span className="whitespace-nowrap">Tiết <span className="text-primary font-bold">{sc.schedule.startPeriod}-{sc.schedule.endPeriod}</span></span>
+                  </div>
+                  {sc.schedule.room && (
+                    <div className="text-xs opacity-70 mt-0.5">P.{sc.schedule.room}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <span className="text-muted-foreground text-sm italic opacity-70">-</span>
+          )}
+        </TableCell>
+      </TableRow>
+    );
+  };
 
   if (!classes || classes.length === 0) return null;
 
@@ -87,93 +194,77 @@ export function UploadedClassesTable({ classes }: UploadedClassesTableProps) {
         </div>
       </div>
 
-      <div className="rounded-md border bg-card shadow-sm min-w-0">
-        <ScrollArea className="h-[400px] w-full">
-          <div className="w-full">
-            <Table className="w-full">
+      <div className="rounded-md border bg-card shadow-sm">
+        <ScrollArea className="h-[550px] w-full">
+          <div className="w-max min-w-full">
+            <Table className={`table-fixed ${onSelectClass || onAddCourseRequest ? "w-[850px]" : "w-[800px]"}`}>
               <TableHeader className="sticky top-0 bg-secondary z-10 shadow-sm">
                 <TableRow>
-                  <TableHead className="font-semibold text-foreground w-[120px]">Mã Môn</TableHead>
-                  <TableHead className="font-semibold text-foreground max-w-[250px]">Tên Môn</TableHead>
-                  <TableHead className="font-semibold text-foreground text-center w-[80px]">Tín Chỉ</TableHead>
-                  <TableHead className="font-semibold text-foreground">Các Lớp</TableHead>
+                  {onSelectClass && (
+                    <TableHead className="w-[50px]"></TableHead>
+                  )}
+                  {onAddCourseRequest && (
+                    <TableHead className="w-[50px]"></TableHead>
+                  )}
+                  <TableHead className="font-semibold text-foreground w-[120px] pl-6">Mã Môn</TableHead>
+                  <TableHead className="font-semibold text-foreground w-[180px]">Tên Môn</TableHead>
+                  <TableHead className="font-semibold text-foreground text-center w-[70px]">Tín Chỉ</TableHead>
+                  <TableHead className="font-semibold text-foreground w-[90px]">Lớp</TableHead>
+                  <TableHead className="font-semibold text-foreground w-[120px]">Lịch Học</TableHead>
+                  <TableHead className="font-semibold text-foreground w-[240px]">Thực Hành</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {groupedCourses.length > 0 ? (
-                  groupedCourses.map((group, idx) => (
-                    <TableRow key={`${group.courseCode}-${idx}`} className="hover:bg-muted/50 transition-colors">
-                      <TableCell className="font-bold text-primary whitespace-nowrap align-top pt-4">
-                        {group.courseCode}
-                      </TableCell>
-                      <TableCell className="font-medium align-top pt-4 max-w-[250px] whitespace-normal break-words">
-                        {group.courseName}
-                      </TableCell>
-                      <TableCell className="text-center font-semibold text-muted-foreground whitespace-nowrap align-top pt-4">{group.credits || 3}</TableCell>
-                      <TableCell className="align-top py-4">
-                        <div className="flex flex-wrap gap-1.5">
-                          {group.classes.map((c, cIdx) => (
-                            <HoverCard key={cIdx} openDelay={200} closeDelay={100}>
-                              <HoverCardTrigger asChild>
-                                <Badge variant="outline" className="cursor-default hover:bg-primary/10 transition-colors">
-                                  {c.className}
-                                </Badge>
-                              </HoverCardTrigger>
-                              <HoverCardContent className="w-80 shadow-lg" side="top" align="start">
-                                <div className="space-y-3">
-                                  <div>
-                                    <h4 className="font-bold text-primary">{c.className}</h4>
-                                    <p className="text-sm text-muted-foreground">{c.courseName}</p>
-                                  </div>
-                                  
-                                  <div className="space-y-1.5 border-t pt-2">
-                                    <p className="font-semibold text-sm">Lịch học chính:</p>
-                                    <div className="flex items-center gap-2 text-sm bg-muted/30 p-2 rounded">
-                                      <span>Thứ <span className="font-bold text-amber-600 dark:text-amber-500">{c.schedule.dayOfWeek}</span></span>
-                                      <span className="text-muted-foreground">|</span>
-                                      <span>Tiết <span className="font-bold text-primary">{c.schedule.startPeriod}-{c.schedule.endPeriod}</span></span>
-                                      {c.schedule.room && (
-                                        <>
-                                          <span className="text-muted-foreground">|</span>
-                                          <span>P.{c.schedule.room}</span>
-                                        </>
-                                      )}
-                                    </div>
-                                  </div>
-                                  
-                                  {c.subClasses && c.subClasses.length > 0 && (
-                                    <div className="pt-2 border-t space-y-2">
-                                      <p className="font-semibold text-sm">Thực hành / Bài tập:</p>
-                                      {c.subClasses.map((sc, scIdx) => (
-                                        <div key={scIdx} className="bg-muted/50 p-2 rounded text-sm space-y-1">
-                                          <p className="font-medium opacity-80">Nhóm {sc.groupCode} - {sc.type === "practical" ? "Thực hành" : "Bài tập"}</p>
-                                          <div className="flex flex-wrap items-center gap-2">
-                                            <span>Thứ <span className="font-bold text-amber-600 dark:text-amber-500">{sc.schedule.dayOfWeek}</span></span>
-                                            <span className="text-muted-foreground">|</span>
-                                            <span>Tiết <span className="font-bold text-primary">{sc.schedule.startPeriod}-{sc.schedule.endPeriod}</span></span>
-                                            {sc.schedule.room && (
-                                              <>
-                                                <span className="text-muted-foreground">|</span>
-                                                <span>P.{sc.schedule.room}</span>
-                                              </>
-                                            )}
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                              </HoverCardContent>
-                            </HoverCard>
-                          ))}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                {groupedClasses.length > 0 ? (
+                  groupedClasses.flatMap((group, groupIdx) => {
+                    const isScheduled = scheduledCourseCodes?.includes(group.courseCode);
+                    const isExpanded = expandedCourseCodes.has(group.courseCode);
+
+                    if (!isScheduled) {
+                      return group.classes.map((c, idx) => renderRow(c, Number(`${groupIdx}${idx}`), false));
+                    }
+
+                    const scheduledClassInGroup = group.classes.find(c => scheduledClassIds?.includes(c.className));
+                    let otherClasses = group.classes.filter(c => c !== scheduledClassInGroup);
+
+                    const rows = [];
+                    if (scheduledClassInGroup) {
+                      rows.push(renderRow(scheduledClassInGroup, Number(`${groupIdx}0`), false));
+                    } else {
+                      // isScheduled is true, but no specific class is selected (e.g. Auto Schedule)
+                      // Use the first class as the placeholder and gray it out.
+                      const firstClass = group.classes[0];
+                      otherClasses = group.classes.slice(1);
+                      rows.push(renderRow(firstClass, Number(`${groupIdx}0`), true));
+                    }
+
+                    if (otherClasses.length > 0) {
+                      if (isExpanded) {
+                        otherClasses.forEach((c, idx) => rows.push(renderRow(c, Number(`${groupIdx}${idx + 1}`), true)));
+                        rows.push(
+                          <TableRow key={`toggle-${group.courseCode}`} className="bg-muted/10 hover:bg-muted/20 cursor-pointer" onClick={() => toggleExpand(group.courseCode)}>
+                            <TableCell colSpan={onSelectClass || onAddCourseRequest ? 7 : 6} className="text-center py-2 text-xs font-medium text-primary">
+                              [-] Thu gọn các lớp cùng mã môn
+                            </TableCell>
+                          </TableRow>
+                        );
+                      } else {
+                        rows.push(
+                          <TableRow key={`toggle-${group.courseCode}`} className="bg-muted/10 hover:bg-muted/20 cursor-pointer" onClick={() => toggleExpand(group.courseCode)}>
+                            <TableCell colSpan={onSelectClass || onAddCourseRequest ? 7 : 6} className="text-center py-2 text-xs font-medium text-primary">
+                              [+] Hiển thị {otherClasses.length} lớp khác cùng mã môn
+                            </TableCell>
+                          </TableRow>
+                        );
+                      }
+                    }
+
+                    return rows;
+                  })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
-                      Không tìm thấy môn học nào.
+                    <TableCell colSpan={onSelectClass || onAddCourseRequest ? 7 : 6} className="h-24 text-center">
+                      Không tìm thấy kết quả nào.
                     </TableCell>
                   </TableRow>
                 )}

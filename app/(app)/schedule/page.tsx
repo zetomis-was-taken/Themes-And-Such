@@ -9,7 +9,7 @@ import {
   requestsAtom,
   sortByAtom,
   maxResultsAtom,
-  resultsAtom
+  resultsAtom,
 } from "@/lib/store/scheduleAtoms";
 import { ClassDataDropzone } from "@/components/schedule/ClassDataDropzone";
 import { UploadedClassesTable } from "@/components/schedule/UploadedClassesTable";
@@ -24,8 +24,9 @@ import {
 import { ScheduleGenerator } from "@/lib/algo/generator";
 import { ScheduleViewer } from "@/components/schedule/ScheduleViewer";
 import { Button } from "@/components/ui/button";
-import { Calculator } from "lucide-react";
+import { Calculator, RefreshCw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 import Link from "next/link";
 
@@ -91,20 +92,20 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="container max-w-7xl mx-auto py-8 px-4 space-y-8 pb-20">
+    <div className="container max-w-[1450px] mx-auto py-8 px-4 space-y-8 pb-20">
       <div className="mb-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Xếp Lịch Tự Động
           </h1>
           <p className="text-muted-foreground mt-2">
-            Tải lên danh sách lớp mở, thiết lập thời gian và nhóm môn học để thuật
-            toán xếp lịch tốt nhất cho bạn.
+            Tải lên danh sách lớp mở, thiết lập thời gian và nhóm môn học để
+            thuật toán xếp lịch tốt nhất cho bạn.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-8 xl:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_600px] gap-8 xl:gap-12">
         <div className="space-y-8 min-w-0">
           <section>
             <div className="flex items-center gap-2 mb-4">
@@ -113,14 +114,48 @@ export default function SchedulePage() {
               </div>
               <h2 className="text-xl font-semibold">Dữ liệu Lớp học</h2>
             </div>
-            <ClassDataDropzone onDataLoaded={setClasses} />
-            {classes.length > 0 && (
-              <div className="mt-4 space-y-4">
-                <p className="text-sm text-green-600 font-medium flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>{" "}
-                  Đã nạp {classes.length} lớp học.
-                </p>
-                <UploadedClassesTable classes={classes} />
+            {classes.length === 0 ? (
+              <ClassDataDropzone onDataLoaded={setClasses} />
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between bg-muted/30 p-3 rounded-lg border border-border/50">
+                  <p className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
+                    Đã nạp {classes.length} lớp học.
+                  </p>
+                  <Button
+                    size="sm"
+                    onClick={() => setClasses([])}
+                    className="h-8 text-xs font-medium"
+                  >
+                    <RefreshCw className="w-3 h-3 mr-2" />
+                    Nhập lại danh sách
+                  </Button>
+                </div>
+                <UploadedClassesTable
+                  classes={classes}
+                  scheduledCourseCodes={requests.flatMap((r) => r.courseCodes)}
+                  onAddCourseRequest={(courseCode) => {
+                    const existingCodes = new Set(
+                      requests.flatMap((r) => r.courseCodes),
+                    );
+                    if (existingCodes.has(courseCode)) {
+                      toast.error(
+                        `Mã môn ${courseCode} đã có trong danh sách yêu cầu.`,
+                      );
+                      return;
+                    }
+
+                    setRequests([
+                      ...requests,
+                      {
+                        courseCodes: [courseCode],
+                        difficulty: 5,
+                      },
+                    ]);
+                    toast.success(`Đã thêm ${courseCode} vào yêu cầu môn học.`);
+                  }}
+                />
               </div>
             )}
           </section>

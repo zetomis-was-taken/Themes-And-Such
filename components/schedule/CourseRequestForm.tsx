@@ -1,181 +1,153 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CourseRequest } from "@/lib/algo/types";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, Pencil } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CourseRequestFormProps {
   requests: CourseRequest[];
   onChange: (requests: CourseRequest[]) => void;
-  availableCourseCodes: string[];
+  availableCourseCodes?: string[];
 }
 
-export function CourseRequestForm({ requests, onChange, availableCourseCodes }: CourseRequestFormProps) {
-  const [input, setInput] = useState("");
-  const [difficulty, setDifficulty] = useState(5);
-  
-  const handleAddRequest = () => {
-    const vals = input.trim().toUpperCase().split(/\s+/).filter(v => v);
-    if (vals.length === 0) return;
+// Hàm hỗ trợ đổi màu Badge theo độ khó
+function getDifficultyBadgeColor(val: number) {
+  if (val < 5) return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800";
+  if (val <= 7) return "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 border-amber-200 dark:border-amber-800";
+  return "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 border-red-200 dark:border-red-800";
+}
 
-    const invalidCodes = availableCourseCodes.length > 0 
-      ? vals.filter(val => !availableCourseCodes.includes(val))
-      : [];
+// Component con xử lý state Slider cục bộ và Animation Layout
+const MotionTableRow = motion.tr;
 
-    if (invalidCodes.length > 0) {
-      toast.error(`Các mã môn sau không tồn tại: ${invalidCodes.join(", ")}`);
-      return;
-    }
+function RequestRow({ request, onUpdate, onRemove }: { request: CourseRequest, onUpdate: (val: number) => void, onRemove: () => void }) {
+  const [localDiff, setLocalDiff] = useState(request.difficulty);
 
-    // Lọc bỏ mã trùng lặp trong input
-    const uniqueVals = Array.from(new Set(vals));
+  // Sync state nếu parent array bị thay đổi từ bên ngoài (e.g. xóa dòng khác)
+  useEffect(() => {
+    setLocalDiff(request.difficulty);
+  }, [request.difficulty]);
 
-    // Kiểm tra xem mã môn đã tồn tại trong danh sách yêu cầu chưa
-    const existingCodes = new Set(requests.flatMap(r => r.courseCodes));
-    const duplicateCodes = uniqueVals.filter(val => existingCodes.has(val));
+  return (
+    <MotionTableRow 
+      layout
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.3 }}
+      className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+    >
+      <TableCell className="font-bold text-primary align-middle">
+        <div className="flex flex-wrap gap-1.5">
+          {request.courseCodes.map(code => (
+            <Badge key={code} variant="outline" className="bg-primary/10 text-primary border-primary/20">
+              {code}
+            </Badge>
+          ))}
+        </div>
+      </TableCell>
+      <TableCell className="align-middle">
+        <div className="flex items-center gap-6">
+          <Slider
+            value={[localDiff]}
+            min={1}
+            max={10}
+            step={1}
+            onValueChange={(val) => setLocalDiff(val[0])} // Đổi màu badge tức thời, chưa sort
+            onValueCommit={(val) => onUpdate(val[0])}     // Nhả chuột mới báo lên cha để sort
+            className="flex-1 cursor-grab active:cursor-grabbing"
+          />
+          <Badge variant="outline" className={`w-14 justify-center shrink-0 font-bold transition-colors duration-300 ${getDifficultyBadgeColor(localDiff)}`}>
+            {localDiff}/10
+          </Badge>
+        </div>
+      </TableCell>
+      <TableCell className="text-center align-middle">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full" 
+          onClick={onRemove}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </TableCell>
+    </MotionTableRow>
+  );
+}
 
-    if (duplicateCodes.length > 0) {
-      toast.error(`Các mã môn sau đã có trong danh sách yêu cầu: ${duplicateCodes.join(", ")}`);
-      return;
-    }
-
-    onChange([...requests, {
-      courseCodes: uniqueVals,
-      difficulty: difficulty
-    }]);
-
-    setInput("");
-    setDifficulty(5);
-  };
-
+export function CourseRequestForm({ requests, onChange }: CourseRequestFormProps) {
   const removeRequest = (index: number) => {
     const newReqs = [...requests];
     newReqs.splice(index, 1);
     onChange(newReqs);
   };
 
-  const editRequest = (index: number) => {
-    const req = requests[index];
-    setDifficulty(req.difficulty);
-    setInput(req.courseCodes.join(" "));
-    // Xoá yêu cầu cũ để thay thế
-    removeRequest(index);
-    toast.info("Đang chỉnh sửa yêu cầu. Hãy ấn Thêm khi hoàn tất.");
+  const updateDifficulty = (index: number, newDifficulty: number) => {
+    const newReqs = [...requests];
+    newReqs[index].difficulty = newDifficulty;
+    onChange(newReqs);
   };
 
-  // Gom nhóm yêu cầu theo độ khó
-  const groupedRequests = requests.reduce((acc, req, idx) => {
-    const diff = req.difficulty;
-    if (!acc[diff]) {
-      acc[diff] = [];
-    }
-    acc[diff].push({ ...req, originalIndex: idx });
-    return acc;
-  }, {} as Record<number, (CourseRequest & { originalIndex: number })[]>);
-
-  const sortedDifficulties = Object.keys(groupedRequests).map(Number).sort((a, b) => b - a);
+  // Sort mảng trước khi map, nhưng cần lưu lại index gốc để gọi hàm remove/update đúng vị trí
+  const sortedRequests = requests.map((req, idx) => ({ req, originalIndex: idx }))
+                                 .sort((a, b) => b.req.difficulty - a.req.difficulty);
 
   return (
-    <div className="space-y-6">
-      <Card className="border shadow-sm">
-        <CardContent className="pt-6 space-y-5">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Nhập Mã Môn</Label>
-              <Input 
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddRequest(); } }}
-                placeholder="VD: INT2203 hoặc INT2203 MAT1092"
-              />
-              <p className="text-xs text-muted-foreground">Nhập 1 mã môn, hoặc nhiều mã môn (cách nhau bởi khoảng trắng) có thể thay thế nhau.</p>
-            </div>
-            {input.trim().split(/\s+/).filter(v => v).length > 0 && (
-              <div className="flex flex-wrap gap-2 py-2">
-                {Array.from(new Set(input.trim().toUpperCase().split(/\s+/).filter(v => v))).map(code => (
-                  <Badge key={code} variant="secondary">{code}</Badge>
-                ))}
-              </div>
-            )}
-            <Button type="button" variant="secondary" onClick={handleAddRequest} disabled={!input.trim()} className="w-full font-medium">
-              <Plus className="h-4 w-4 mr-2" /> Thêm Yêu Cầu
-            </Button>
-          </div>
-
-          <div className="space-y-4 pt-4 border-t">
-            <div className="flex justify-between items-center">
-              <Label>Độ khó mong muốn</Label>
-              <span className="text-sm font-medium bg-muted px-2 py-0.5 rounded text-primary">{difficulty}/10</span>
-            </div>
-            <Slider 
-              value={[difficulty]} 
-              min={1} 
-              max={10} 
-              step={1} 
-              onValueChange={(val) => setDifficulty(val[0])} 
-              className="py-2"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="space-y-4">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
         <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">
           Danh sách yêu cầu ({requests.length})
         </h4>
-        
-        {requests.length === 0 ? (
-          <p className="text-sm text-muted-foreground italic bg-muted/30 p-4 rounded-md border border-dashed border-border text-center">
-            Chưa có yêu cầu môn học nào được tạo.
-          </p>
-        ) : (
-          <div className="space-y-4">
-            {sortedDifficulties.map(diff => (
-              <Card key={diff} className="overflow-hidden border-primary/20">
-                <CardHeader className="py-3 px-4 bg-muted/40 border-b">
-                  <CardTitle className="text-sm font-semibold flex items-center justify-between">
-                    <span>Mức độ ưu tiên / Độ khó</span>
-                    <Badge variant="default" className="bg-primary/90">{diff}/10</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="divide-y">
-                    {groupedRequests[diff].map((req, localIdx) => (
-                      <div key={localIdx} className="flex items-center justify-between p-3 px-4 hover:bg-muted/20 transition-colors group">
-                        <div className="flex flex-wrap gap-1.5">
-                          {req.courseCodes.length > 1 && (
-                            <span className="text-xs font-semibold mr-1 flex items-center text-muted-foreground">Nhóm:</span>
-                          )}
-                          {req.courseCodes.map(code => (
-                            <Badge key={code} variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                              {code}
-                            </Badge>
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10" onClick={() => editRequest(req.originalIndex)}>
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => removeRequest(req.originalIndex)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
       </div>
+
+      {requests.length === 0 ? (
+        <div className="bg-card border rounded-md p-8 text-center space-y-3 shadow-sm">
+          <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-2">
+            <span className="text-xl font-bold">+</span>
+          </div>
+          <h3 className="text-lg font-semibold">Chưa có môn học nào</h3>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            Hãy bấm vào biểu tượng dấu cộng <span className="font-bold text-primary">[+]</span> ở bảng "Dữ liệu lớp học" phía trên để đưa môn học vào danh sách yêu cầu.
+          </p>
+        </div>
+      ) : (
+        <div className="rounded-md border bg-card shadow-sm overflow-hidden">
+          <Table>
+            <TableHeader className="bg-secondary/50">
+              <TableRow>
+                <TableHead className="w-[180px] font-semibold text-foreground">Mã Môn</TableHead>
+                <TableHead className="font-semibold text-foreground">Mức độ ưu tiên / Độ khó</TableHead>
+                <TableHead className="w-[80px] text-center font-semibold text-foreground">Xóa</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <AnimatePresence initial={false}>
+                {sortedRequests.map(({ req, originalIndex }) => (
+                  <RequestRow 
+                    key={req.courseCodes.join("-")}
+                    request={req}
+                    onUpdate={(newDiff) => updateDifficulty(originalIndex, newDiff)}
+                    onRemove={() => removeRequest(originalIndex)}
+                  />
+                ))}
+              </AnimatePresence>
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }

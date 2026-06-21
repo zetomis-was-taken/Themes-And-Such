@@ -25,7 +25,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { saveOfficialSchedule } from "@/lib/db/schedule/actions";
-import { Loader2, Plus, Save } from "lucide-react";
+import { Loader2, Plus, Save, RefreshCw } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -307,7 +307,7 @@ export function OfficialScheduleEditor({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_750px] gap-8">
       <div className="space-y-6 min-w-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -316,24 +316,49 @@ export function OfficialScheduleEditor({
           </TabsList>
 
           <TabsContent value="json" className="space-y-4 pt-4">
-            <Card className="overflow-hidden">
-              <CardContent className="pt-6 space-y-4 overflow-hidden">
-                <ClassDataDropzone
-                  onDataLoaded={(data) => {
-                    setJsonClasses(data);
-                    setSearchCourseCode("");
-                    setSelectedClassId("");
-                    setSelectedSubClassGroup("");
-                  }}
-                />
-
-                {jsonClasses.length > 0 && (
-                  <div className="mt-4 space-y-4">
-                    <p className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>{" "}
-                      Đã nạp {jsonClasses.length} lớp học.
-                    </p>
-                    <UploadedClassesTable classes={jsonClasses} />
+            <Card>
+              <CardContent className="pt-6 space-y-4">
+                {jsonClasses.length === 0 ? (
+                  <ClassDataDropzone
+                    onDataLoaded={(data) => {
+                      setJsonClasses(data);
+                      setSearchCourseCode("");
+                      setSelectedClassId("");
+                      setSelectedSubClassGroup("");
+                    }}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between bg-muted/30 p-3 rounded-lg border border-border/50">
+                      <p className="text-sm text-green-600 dark:text-green-400 font-medium flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
+                        Đã nạp {jsonClasses.length} lớp học.
+                      </p>
+                      <Button 
+                        size="sm" 
+                        onClick={() => {
+                          setJsonClasses([]);
+                          setSearchCourseCode("");
+                          setSelectedClassId("");
+                          setSelectedSubClassGroup("");
+                        }}
+                        className="h-8 text-xs font-medium"
+                      >
+                        <RefreshCw className="w-3 h-3 mr-2" />
+                        Nhập lại danh sách
+                      </Button>
+                    </div>
+                    <UploadedClassesTable 
+                      classes={jsonClasses} 
+                      selectedClassId={selectedClassId}
+                      scheduledCourseCodes={mySchedule.map(s => s.classData.courseCode)}
+                      scheduledClassIds={mySchedule.map(s => s.classData.className)}
+                      onSelectClass={(courseCode, className) => {
+                        setSearchCourseCode(courseCode);
+                        setSelectedClassId(className);
+                        setSelectedSubClassGroup("");
+                      }}
+                    />
                   </div>
                 )}
 
