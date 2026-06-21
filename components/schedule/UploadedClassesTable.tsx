@@ -92,21 +92,23 @@ export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, 
         )}
         {onAddCourseRequest && (
           <TableCell>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-6 h-6 mx-auto rounded-full hover:bg-primary/20 hover:text-primary transition-colors"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (isGrayedOut) return;
-                onAddCourseRequest(c.courseCode);
-              }}
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
+            <div className="flex justify-center items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-8 h-8 rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isGrayedOut) return;
+                  onAddCourseRequest(c.courseCode);
+                }}
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
           </TableCell>
         )}
-        <TableCell className="font-bold text-primary whitespace-nowrap">
+        <TableCell className="font-bold text-primary whitespace-nowrap pl-6">
           {c.courseCode}
         </TableCell>
         <TableCell className="font-medium whitespace-normal" title={c.courseName}>
@@ -202,9 +204,9 @@ export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, 
                     <TableHead className="w-[50px]"></TableHead>
                   )}
                   {onAddCourseRequest && (
-                    <TableHead className="w-[50px] text-center font-semibold text-foreground">Thêm</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
                   )}
-                  <TableHead className="font-semibold text-foreground w-[100px]">Mã Môn</TableHead>
+                  <TableHead className="font-semibold text-foreground w-[120px] pl-6">Mã Môn</TableHead>
                   <TableHead className="font-semibold text-foreground w-[180px]">Tên Môn</TableHead>
                   <TableHead className="font-semibold text-foreground text-center w-[70px]">Tín Chỉ</TableHead>
                   <TableHead className="font-semibold text-foreground w-[90px]">Lớp</TableHead>
