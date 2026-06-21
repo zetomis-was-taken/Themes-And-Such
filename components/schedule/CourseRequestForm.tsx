@@ -90,16 +90,18 @@ function RequestRow({ request, onUpdate, onRemove, onDragStart, onDrop, onDragEn
           <GripVertical className="h-5 w-5" />
         </div>
       </TableCell>
-      <TableCell className="font-bold text-primary align-middle">
-        <div className="flex flex-wrap gap-1.5 items-center">
+      <TableCell className="font-bold text-primary align-middle py-3">
+        <div className="flex flex-col gap-1.5 items-start">
           {request.courseCodes.length > 1 && (
-            <span className="text-xs font-semibold mr-1 flex items-center text-muted-foreground">Nhóm:</span>
+            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Nhóm thay thế:</span>
           )}
-          {request.courseCodes.map(code => (
-            <Badge key={code} variant="outline" className="bg-primary/10 text-primary border-primary/20">
-              {code}
-            </Badge>
-          ))}
+          <div className="flex flex-wrap gap-1.5">
+            {request.courseCodes.map(code => (
+              <Badge key={code} variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                {code}
+              </Badge>
+            ))}
+          </div>
         </div>
       </TableCell>
       <TableCell className="align-middle">
@@ -179,10 +181,7 @@ export function CourseRequestForm({ requests, onChange }: CourseRequestFormProps
   return (
     <div className="space-y-4">
       <div>
-        <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">
-          Danh sách yêu cầu ({requests.length})
-        </h4>
-        <p className="text-xs text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground">
           Kéo thả một môn học đè lên môn khác để gộp chúng thành các môn thay thế (hệ thống sẽ tự động xếp 1 trong số các môn trong nhóm).
         </p>
       </div>

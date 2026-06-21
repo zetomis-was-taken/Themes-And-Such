@@ -167,7 +167,7 @@ export default function SchedulePage() {
               <div className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">
                 2
               </div>
-              <h2 className="text-xl font-semibold">Yêu cầu Môn học</h2>
+              <h2 className="text-xl font-semibold uppercase tracking-wider">Danh sách yêu cầu ({requests.length})</h2>
             </div>
             <CourseRequestForm
               requests={requests}
