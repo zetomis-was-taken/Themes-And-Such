@@ -12,8 +12,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search } from "lucide-react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Search, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface UploadedClassesTableProps {
   classes: ClassData[];
@@ -21,9 +21,10 @@ interface UploadedClassesTableProps {
   selectedClassId?: string;
   scheduledCourseCodes?: string[];
   scheduledClassIds?: string[];
+  onAddCourseRequest?: (courseCode: string) => void;
 }
 
-export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, scheduledCourseCodes = [], scheduledClassIds = [] }: UploadedClassesTableProps) {
+export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, scheduledCourseCodes = [], scheduledClassIds = [], onAddCourseRequest }: UploadedClassesTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDay, setFilterDay] = useState("all");
   const [expandedCourseCodes, setExpandedCourseCodes] = useState<Set<string>>(new Set());
@@ -79,14 +80,30 @@ export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, 
     return (
       <TableRow 
         key={`${c.courseCode}-${c.className}-${idx}`} 
-        className={`transition-colors ${isGrayedOut ? 'opacity-50 bg-muted/20' : 'hover:bg-muted/50'} ${onSelectClass && !isGrayedOut ? 'cursor-pointer' : ''} ${isSelected ? 'bg-primary/5' : ''}`}
+        className={`transition-colors ${isGrayedOut ? 'opacity-50 bg-muted/20' : 'hover:bg-muted/50'} ${(onSelectClass || onAddCourseRequest) && !isGrayedOut ? 'cursor-pointer' : ''} ${isSelected ? 'bg-primary/5' : ''}`}
         onClick={handleClick}
       >
         {onSelectClass && (
           <TableCell>
             <div className={`w-4 h-4 rounded-full border flex items-center justify-center mx-auto ${isSelected ? 'border-primary bg-primary' : 'border-primary/50 bg-transparent'} ${isGrayedOut ? 'opacity-50' : ''}`}>
-              {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground" />}
+              {isSelected && <div className="w-2 h-2 bg-white rounded-full" />}
             </div>
+          </TableCell>
+        )}
+        {onAddCourseRequest && (
+          <TableCell>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-6 h-6 mx-auto rounded-full hover:bg-primary/20 hover:text-primary transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isGrayedOut) return;
+                onAddCourseRequest(c.courseCode);
+              }}
+            >
+              <Plus className="w-4 h-4" />
+            </Button>
           </TableCell>
         )}
         <TableCell className="font-bold text-primary whitespace-nowrap">
@@ -178,11 +195,14 @@ export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, 
       <div className="rounded-md border bg-card shadow-sm">
         <ScrollArea className="h-[550px] w-full">
           <div className="w-max min-w-full">
-            <Table className={`table-fixed ${onSelectClass ? "w-[850px]" : "w-[800px]"}`}>
+            <Table className={`table-fixed ${onSelectClass || onAddCourseRequest ? "w-[850px]" : "w-[800px]"}`}>
               <TableHeader className="sticky top-0 bg-secondary z-10 shadow-sm">
                 <TableRow>
                   {onSelectClass && (
                     <TableHead className="w-[50px]"></TableHead>
+                  )}
+                  {onAddCourseRequest && (
+                    <TableHead className="w-[50px] text-center font-semibold text-foreground">Thêm</TableHead>
                   )}
                   <TableHead className="font-semibold text-foreground w-[100px]">Mã Môn</TableHead>
                   <TableHead className="font-semibold text-foreground w-[180px]">Tên Môn</TableHead>
@@ -218,7 +238,7 @@ export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, 
                         otherClasses.forEach((c, idx) => rows.push(renderRow(c, Number(`${groupIdx}${idx + 1}`), true)));
                         rows.push(
                           <TableRow key={`toggle-${group.courseCode}`} className="bg-muted/10 hover:bg-muted/20 cursor-pointer" onClick={() => toggleExpand(group.courseCode)}>
-                            <TableCell colSpan={onSelectClass ? 7 : 6} className="text-center py-2 text-xs font-medium text-primary">
+                            <TableCell colSpan={onSelectClass || onAddCourseRequest ? 7 : 6} className="text-center py-2 text-xs font-medium text-primary">
                               [-] Thu gọn các lớp cùng mã môn
                             </TableCell>
                           </TableRow>
@@ -226,7 +246,7 @@ export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, 
                       } else {
                         rows.push(
                           <TableRow key={`toggle-${group.courseCode}`} className="bg-muted/10 hover:bg-muted/20 cursor-pointer" onClick={() => toggleExpand(group.courseCode)}>
-                            <TableCell colSpan={onSelectClass ? 7 : 6} className="text-center py-2 text-xs font-medium text-primary">
+                            <TableCell colSpan={onSelectClass || onAddCourseRequest ? 7 : 6} className="text-center py-2 text-xs font-medium text-primary">
                               [+] Hiển thị {otherClasses.length} lớp khác cùng mã môn
                             </TableCell>
                           </TableRow>
@@ -238,7 +258,7 @@ export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, 
                   })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={onSelectClass ? 7 : 6} className="h-24 text-center">
+                    <TableCell colSpan={onSelectClass || onAddCourseRequest ? 7 : 6} className="h-24 text-center">
                       Không tìm thấy kết quả nào.
                     </TableCell>
                   </TableRow>

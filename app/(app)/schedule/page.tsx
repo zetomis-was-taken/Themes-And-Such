@@ -26,6 +26,7 @@ import { ScheduleViewer } from "@/components/schedule/ScheduleViewer";
 import { Button } from "@/components/ui/button";
 import { Calculator, RefreshCw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 import Link from "next/link";
 
@@ -91,7 +92,7 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="container max-w-[1400px] mx-auto py-8 px-4 space-y-8 pb-20">
+    <div className="container max-w-[1450px] mx-auto py-8 px-4 space-y-8 pb-20">
       <div className="mb-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
@@ -131,7 +132,22 @@ export default function SchedulePage() {
                     Nhập lại danh sách
                   </Button>
                 </div>
-                <UploadedClassesTable classes={classes} />
+                <UploadedClassesTable 
+                  classes={classes}
+                  onAddCourseRequest={(courseCode) => {
+                    const existingCodes = new Set(requests.flatMap(r => r.courseCodes));
+                    if (existingCodes.has(courseCode)) {
+                      toast.error(`Mã môn ${courseCode} đã có trong danh sách yêu cầu.`);
+                      return;
+                    }
+                    
+                    setRequests([...requests, {
+                      courseCodes: [courseCode],
+                      difficulty: 5
+                    }]);
+                    toast.success(`Đã thêm ${courseCode} vào yêu cầu môn học.`);
+                  }}
+                />
               </div>
             )}
           </section>
