@@ -9,7 +9,7 @@ import {
   requestsAtom,
   sortByAtom,
   maxResultsAtom,
-  resultsAtom
+  resultsAtom,
 } from "@/lib/store/scheduleAtoms";
 import { ClassDataDropzone } from "@/components/schedule/ClassDataDropzone";
 import { UploadedClassesTable } from "@/components/schedule/UploadedClassesTable";
@@ -99,8 +99,8 @@ export default function SchedulePage() {
             Xếp Lịch Tự Động
           </h1>
           <p className="text-muted-foreground mt-2">
-            Tải lên danh sách lớp mở, thiết lập thời gian và nhóm môn học để thuật
-            toán xếp lịch tốt nhất cho bạn.
+            Tải lên danh sách lớp mở, thiết lập thời gian và nhóm môn học để
+            thuật toán xếp lịch tốt nhất cho bạn.
           </p>
         </div>
       </div>
@@ -123,8 +123,8 @@ export default function SchedulePage() {
                     <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
                     Đã nạp {classes.length} lớp học.
                   </p>
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     onClick={() => setClasses([])}
                     className="h-8 text-xs font-medium"
                   >
@@ -132,20 +132,27 @@ export default function SchedulePage() {
                     Nhập lại danh sách
                   </Button>
                 </div>
-                <UploadedClassesTable 
+                <UploadedClassesTable
                   classes={classes}
-                  scheduledCourseCodes={requests.flatMap(r => r.courseCodes)}
+                  scheduledCourseCodes={requests.flatMap((r) => r.courseCodes)}
                   onAddCourseRequest={(courseCode) => {
-                    const existingCodes = new Set(requests.flatMap(r => r.courseCodes));
+                    const existingCodes = new Set(
+                      requests.flatMap((r) => r.courseCodes),
+                    );
                     if (existingCodes.has(courseCode)) {
-                      toast.error(`Mã môn ${courseCode} đã có trong danh sách yêu cầu.`);
+                      toast.error(
+                        `Mã môn ${courseCode} đã có trong danh sách yêu cầu.`,
+                      );
                       return;
                     }
-                    
-                    setRequests([...requests, {
-                      courseCodes: [courseCode],
-                      difficulty: 5
-                    }]);
+
+                    setRequests([
+                      ...requests,
+                      {
+                        courseCodes: [courseCode],
+                        difficulty: 5,
+                      },
+                    ]);
                     toast.success(`Đã thêm ${courseCode} vào yêu cầu môn học.`);
                   }}
                 />
