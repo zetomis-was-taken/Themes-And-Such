@@ -134,6 +134,7 @@ export default function SchedulePage() {
                 </div>
                 <UploadedClassesTable 
                   classes={classes}
+                  scheduledCourseCodes={requests.flatMap(r => r.courseCodes)}
                   onAddCourseRequest={(courseCode) => {
                     const existingCodes = new Set(requests.flatMap(r => r.courseCodes));
                     if (existingCodes.has(courseCode)) {

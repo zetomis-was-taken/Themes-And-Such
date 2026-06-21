@@ -225,14 +225,17 @@ export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, 
                     }
 
                     const scheduledClassInGroup = group.classes.find(c => scheduledClassIds?.includes(c.className));
-                    const otherClasses = group.classes.filter(c => c !== scheduledClassInGroup);
+                    let otherClasses = group.classes.filter(c => c !== scheduledClassInGroup);
 
                     const rows = [];
                     if (scheduledClassInGroup) {
                       rows.push(renderRow(scheduledClassInGroup, Number(`${groupIdx}0`), false));
-                    } else if (otherClasses.length > 0) {
-                      // Fallback in case scheduledClassIds didn't match anything, just show all
-                      return group.classes.map((c, idx) => renderRow(c, Number(`${groupIdx}${idx}`), false));
+                    } else {
+                      // isScheduled is true, but no specific class is selected (e.g. Auto Schedule)
+                      // Use the first class as the placeholder and gray it out.
+                      const firstClass = group.classes[0];
+                      otherClasses = group.classes.slice(1);
+                      rows.push(renderRow(firstClass, Number(`${groupIdx}0`), true));
                     }
 
                     if (otherClasses.length > 0) {
