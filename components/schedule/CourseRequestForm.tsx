@@ -81,7 +81,6 @@ function RequestRow({ request, onUpdate, onRemove, onDragStart, onDrop, onDragEn
       onDragEnd={onDragEnd}
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
       className={`border-b transition-colors ${isDragOver ? 'bg-primary/5 border-primary/50 outline outline-1 outline-primary' : 'hover:bg-muted/50 data-[state=selected]:bg-muted'}`}
     >
@@ -198,7 +197,7 @@ export function CourseRequestForm({ requests, onChange }: CourseRequestFormProps
         </div>
       ) : (
         <div className="rounded-md border bg-card shadow-sm overflow-hidden">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader className="bg-secondary/50">
               <TableRow>
                 <TableHead className="w-10"></TableHead>
