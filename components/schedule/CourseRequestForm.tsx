@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { CourseRequest } from "@/lib/algo/types";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import { Trash2 } from "lucide-react";
+import { Trash2, GripVertical } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -32,8 +32,19 @@ function getDifficultyBadgeColor(val: number) {
 // Component con xử lý state Slider cục bộ và Animation Layout
 const MotionTableRow = motion.tr;
 
-function RequestRow({ request, onUpdate, onRemove }: { request: CourseRequest, onUpdate: (val: number) => void, onRemove: () => void }) {
+interface RequestRowProps {
+  request: CourseRequest;
+  onUpdate: (val: number) => void;
+  onRemove: () => void;
+  onDragStart: () => void;
+  onDrop: () => void;
+  onDragEnd: () => void;
+}
+
+function RequestRow({ request, onUpdate, onRemove, onDragStart, onDrop, onDragEnd }: RequestRowProps) {
   const [localDiff, setLocalDiff] = useState(request.difficulty);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const dragCounter = useRef(0);
 
   // Sync state nếu parent array bị thay đổi từ bên ngoài (e.g. xóa dòng khác)
   useEffect(() => {
@@ -43,14 +54,47 @@ function RequestRow({ request, onUpdate, onRemove }: { request: CourseRequest, o
   return (
     <MotionTableRow 
       layout
+      draggable
+      onDragStart={(e: any) => {
+        // Set visual effect for dragging
+        e.dataTransfer.effectAllowed = "move";
+        onDragStart();
+      }}
+      onDragEnter={(e: any) => {
+        e.preventDefault();
+        dragCounter.current++;
+        if (dragCounter.current === 1) setIsDragOver(true);
+      }}
+      onDragOver={(e: any) => {
+        e.preventDefault(); // Required to allow drop
+      }}
+      onDragLeave={(e: any) => {
+        dragCounter.current--;
+        if (dragCounter.current === 0) setIsDragOver(false);
+      }}
+      onDrop={(e: any) => {
+        e.preventDefault();
+        dragCounter.current = 0;
+        setIsDragOver(false);
+        onDrop();
+      }}
+      onDragEnd={onDragEnd}
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
-      className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+      className={`border-b transition-colors ${isDragOver ? 'bg-primary/5 border-primary/50 outline outline-1 outline-primary' : 'hover:bg-muted/50 data-[state=selected]:bg-muted'}`}
     >
+      <TableCell className="align-middle w-10 pl-4 pr-0">
+        <div className="cursor-grab active:cursor-grabbing p-1 rounded-md hover:bg-muted text-muted-foreground/50 hover:text-foreground transition-colors">
+          <GripVertical className="h-5 w-5" />
+        </div>
+      </TableCell>
       <TableCell className="font-bold text-primary align-middle">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 items-center">
+          {request.courseCodes.length > 1 && (
+            <span className="text-xs font-semibold mr-1 flex items-center text-muted-foreground">Nhóm:</span>
+          )}
           {request.courseCodes.map(code => (
             <Badge key={code} variant="outline" className="bg-primary/10 text-primary border-primary/20">
               {code}
@@ -89,6 +133,8 @@ function RequestRow({ request, onUpdate, onRemove }: { request: CourseRequest, o
 }
 
 export function CourseRequestForm({ requests, onChange }: CourseRequestFormProps) {
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
   const removeRequest = (index: number) => {
     const newReqs = [...requests];
     newReqs.splice(index, 1);
@@ -101,16 +147,44 @@ export function CourseRequestForm({ requests, onChange }: CourseRequestFormProps
     onChange(newReqs);
   };
 
-  // Sort mảng trước khi map, nhưng cần lưu lại index gốc để gọi hàm remove/update đúng vị trí
+  const handleDrop = (targetIndex: number) => {
+    // Không gộp nếu không có draggedIndex hoặc tự gộp vào chính nó
+    if (draggedIndex === null || draggedIndex === targetIndex) return;
+
+    const sourceReq = requests[draggedIndex];
+    const targetReq = requests[targetIndex];
+
+    // Gộp courseCodes và lọc trùng
+    const mergedCourseCodes = Array.from(new Set([...targetReq.courseCodes, ...sourceReq.courseCodes]));
+
+    const newReqs = [...requests];
+    
+    // Áp dụng "kẻ bị nuốt chửng": Target giữ nguyên độ khó, chỉ mở rộng courseCodes
+    newReqs[targetIndex] = {
+      ...targetReq,
+      courseCodes: mergedCourseCodes
+    };
+    
+    // Xóa source
+    newReqs.splice(draggedIndex, 1);
+    
+    onChange(newReqs);
+    setDraggedIndex(null);
+  };
+
+  // Sort mảng trước khi map, nhưng cần lưu lại index gốc để gọi hàm remove/update/drop đúng vị trí
   const sortedRequests = requests.map((req, idx) => ({ req, originalIndex: idx }))
                                  .sort((a, b) => b.req.difficulty - a.req.difficulty);
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div>
         <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">
           Danh sách yêu cầu ({requests.length})
         </h4>
+        <p className="text-xs text-muted-foreground mt-1">
+          Kéo thả một môn học đè lên môn khác để gộp chúng thành các môn thay thế (hệ thống sẽ tự động xếp 1 trong số các môn trong nhóm).
+        </p>
       </div>
 
       {requests.length === 0 ? (
@@ -128,6 +202,7 @@ export function CourseRequestForm({ requests, onChange }: CourseRequestFormProps
           <Table>
             <TableHeader className="bg-secondary/50">
               <TableRow>
+                <TableHead className="w-10"></TableHead>
                 <TableHead className="w-[180px] font-semibold text-foreground">Mã Môn</TableHead>
                 <TableHead className="font-semibold text-foreground">Mức độ ưu tiên / Độ khó</TableHead>
                 <TableHead className="w-[80px] text-center font-semibold text-foreground">Xóa</TableHead>
@@ -141,6 +216,9 @@ export function CourseRequestForm({ requests, onChange }: CourseRequestFormProps
                     request={req}
                     onUpdate={(newDiff) => updateDifficulty(originalIndex, newDiff)}
                     onRemove={() => removeRequest(originalIndex)}
+                    onDragStart={() => setDraggedIndex(originalIndex)}
+                    onDrop={() => handleDrop(originalIndex)}
+                    onDragEnd={() => setDraggedIndex(null)}
                   />
                 ))}
               </AnimatePresence>
