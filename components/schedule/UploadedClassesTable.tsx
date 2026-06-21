@@ -37,32 +37,17 @@ export function UploadedClassesTable({ classes, onSelectClass, selectedClassId, 
     });
   };
 
-  const groupedCourses = useMemo(() => {
+  const filteredClasses = useMemo(() => {
     if (!classes) return [];
     
-    // Group classes by courseCode
-    const groups: Record<string, { courseCode: string, courseName: string, credits: number, classes: ClassData[] }> = {};
-    for (const c of classes) {
-      if (!groups[c.courseCode]) {
-        groups[c.courseCode] = {
-          courseCode: c.courseCode,
-          courseName: c.courseName,
-          credits: c.credits,
-          classes: []
-        };
-      }
-      groups[c.courseCode].classes.push(c);
-    }
-    
-    // Apply filters
-    return Object.values(groups).filter((group) => {
+    return classes.filter((c) => {
       const searchLower = searchTerm.toLowerCase();
       const matchSearch =
-        group.courseCode.toLowerCase().includes(searchLower) ||
-        group.courseName.toLowerCase().includes(searchLower) ||
-        group.classes.some(c => c.className.toLowerCase().includes(searchLower));
+        c.courseCode.toLowerCase().includes(searchLower) ||
+        c.courseName.toLowerCase().includes(searchLower) ||
+        c.className.toLowerCase().includes(searchLower);
 
-      const matchDay = filterDay === "all" || group.classes.some(c => c.schedule.dayOfWeek.toString() === filterDay);
+      const matchDay = filterDay === "all" || c.schedule.dayOfWeek.toString() === filterDay;
 
       return matchSearch && matchDay;
     });
