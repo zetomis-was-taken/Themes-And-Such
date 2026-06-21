@@ -91,7 +91,7 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="container max-w-7xl mx-auto py-8 px-4 space-y-8 pb-20">
+    <div className="container max-w-[1600px] mx-auto py-8 px-4 space-y-8 pb-20">
       <div className="mb-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
@@ -104,7 +104,7 @@ export default function SchedulePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-8 xl:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_750px] gap-8 xl:gap-12">
         <div className="space-y-8 min-w-0">
           <section>
             <div className="flex items-center gap-2 mb-4">
